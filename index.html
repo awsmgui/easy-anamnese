@@ -21,339 +21,293 @@
             theme: {
                 extend: {
                     fontFamily: { serif: ['"Playfair Display"', 'serif'], sans: ['"Lato"', 'sans-serif'] },
-                    colors: { rose: { 50: '#FFF0F5', 100: '#FFE4E1', 200: '#FFD1DC', 300: '#F08080', 500: '#E9967A', 600: '#CD5C5C', 900: '#8B4513' } },
-                    animation: { 'fade-in': 'fadeIn 0.4s ease-out', 'slide-up': 'slideUp 0.4s ease-out' },
+                    colors: { rose: { 50: '#FFF0F5', 100: '#FFE4E1', 300: '#F08080', 500: '#E9967A', 900: '#8B4513' } },
+                    animation: { 'fade-in': 'fadeIn 0.3s ease-out', 'slide-up': 'slideUp 0.3s ease-out' },
                     keyframes: { 
                         fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+                        slideUp: { '0%': { transform: 'translateY(100%)' }, '100%': { transform: 'translateY(0)' } }
                     }
                 }
             }
         }
     </script>
     <style>
-        body { -webkit-tap-highlight-color: transparent; user-select: none; background-color: #fdf2f8; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        /* Ajustes Mobile First */
+        body { -webkit-tap-highlight-color: transparent; user-select: none; overscroll-behavior-y: none; }
+        
+        /* Glassmorphism Restaurado */
+        .glass { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.4); }
+        .glass-card { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         [v-cloak] { display: none; }
         
-        /* Inputs modernos com Label flutuante ou fixo */
-        .form-group { @apply mb-3; }
-        .form-label { @apply block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 ml-1; }
-        .input-field { @apply w-full px-4 py-3.5 bg-white rounded-xl border border-gray-200 text-gray-800 text-sm font-medium focus:ring-2 focus:ring-rose-200 focus:border-rose-300 outline-none transition shadow-sm placeholder-gray-300; }
-        .input-detail { @apply w-full px-0 py-2 bg-transparent border-b border-rose-200 text-rose-900 placeholder-rose-300 text-sm focus:border-rose-500 outline-none transition; }
+        /* Inputs Mobile Friendly (Altura 48px para toque fácil) */
+        .input-group { @apply mb-3; }
+        .input-label { @apply block text-[11px] font-bold text-rose-900 uppercase tracking-wider ml-3 mb-1 opacity-70; }
+        .input-field { @apply w-full h-12 px-4 bg-white/70 rounded-2xl border-none focus:bg-white focus:ring-2 focus:ring-rose-200 outline-none text-sm text-gray-800 placeholder-gray-400 transition shadow-sm; }
+        .input-detail { @apply w-full p-2 bg-transparent border-b border-rose-300 focus:border-rose-500 outline-none text-sm text-rose-900 placeholder-rose-400 mt-1; }
         
-        /* Cards de Seção */
-        .section-card { @apply bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6; }
-        
-        /* Checkbox Customizado */
-        .custom-checkbox input:checked + div { background-color: #E9967A; border-color: #E9967A; color: white; box-shadow: 0 2px 5px rgba(233, 150, 122, 0.4); }
+        /* Checkbox bonito e grande para dedo */
+        .custom-checkbox input:checked + div { background-color: #E9967A; border-color: #E9967A; color: white; }
     </style>
 </head>
-<body class="text-gray-800 h-screen w-screen overflow-hidden antialiased bg-rose-50">
+<body class="bg-gradient-to-br from-rose-50 via-white to-rose-200 text-gray-700 h-screen w-screen overflow-hidden antialiased">
     
-    <div id="app" v-cloak class="h-full flex flex-col relative max-w-md mx-auto bg-white sm:border-x sm:border-gray-200 shadow-2xl">
+    <div id="app" v-cloak class="h-full flex flex-col relative max-w-md mx-auto shadow-2xl bg-white/30">
 
-        <div v-if="loading" class="absolute inset-0 z-[60] flex items-center justify-center bg-white/90 backdrop-blur-sm">
-            <div class="flex flex-col items-center gap-3">
-                <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-rose-900"></div>
-                <span class="text-xs font-bold text-rose-900 tracking-widest animate-pulse">CARREGANDO...</span>
-            </div>
+        <div v-if="loading" class="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-md">
+            <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-rose-900"></div>
         </div>
 
-        <div v-if="!user" class="flex flex-col justify-center h-full p-8 animate-fade-in relative bg-gradient-to-br from-rose-50 via-white to-rose-100">
+        <div v-if="!user" class="flex flex-col justify-center h-full p-8 animate-fade-in">
             <div class="text-center mb-10">
-                <div class="inline-flex p-6 rounded-full bg-white shadow-lg mb-6 ring-4 ring-rose-50">
+                <div class="inline-flex p-6 rounded-full bg-white/50 shadow-lg mb-6 backdrop-blur-sm border border-white/60">
                     <i class="ph ph-sparkle text-5xl text-rose-900"></i>
                 </div>
-                <h1 class="text-4xl font-serif text-rose-900 mb-2 font-bold">Easy Anamnese</h1>
-                <p class="text-xs font-bold tracking-[0.3em] text-rose-400 uppercase">Gestão de Estética</p>
+                <h1 class="text-4xl font-serif text-rose-900 mb-1">Easy Anamnese</h1>
+                <p class="text-[10px] font-bold tracking-[0.3em] text-rose-500 uppercase">Ficha Profissional</p>
             </div>
 
-            <form @submit.prevent="loginEmail" class="space-y-4">
-                <div>
-                    <label class="sr-only">E-mail</label>
-                    <div class="relative">
-                        <i class="ph ph-envelope absolute left-4 top-4 text-gray-400 text-lg"></i>
-                        <input v-model="email" type="email" placeholder="Seu e-mail profissional" class="w-full pl-11 pr-4 py-4 bg-white rounded-2xl border border-rose-100 focus:ring-2 focus:ring-rose-200 outline-none text-sm font-medium shadow-sm">
-                    </div>
+            <form @submit.prevent="loginEmail" class="glass-card p-6 rounded-[30px] space-y-4">
+                <div class="input-group">
+                    <label class="input-label">E-mail</label>
+                    <input v-model="email" type="email" placeholder="seu@email.com" class="input-field">
                 </div>
-                <div>
-                    <label class="sr-only">Senha</label>
-                    <div class="relative">
-                        <i class="ph ph-lock absolute left-4 top-4 text-gray-400 text-lg"></i>
-                        <input v-model="password" type="password" placeholder="Sua senha" class="w-full pl-11 pr-4 py-4 bg-white rounded-2xl border border-rose-100 focus:ring-2 focus:ring-rose-200 outline-none text-sm font-medium shadow-sm">
-                    </div>
+                <div class="input-group">
+                    <label class="input-label">Senha</label>
+                    <input v-model="password" type="password" placeholder="••••••" class="input-field">
                 </div>
-                <button type="submit" class="w-full bg-rose-900 text-white py-4 rounded-2xl font-bold shadow-lg shadow-rose-900/20 active:scale-[0.98] transition hover:bg-rose-800 flex justify-center items-center gap-2 mt-2 text-base">
-                    <span>Acessar Sistema</span> <i class="ph ph-arrow-right font-bold"></i>
+                <button type="submit" class="w-full h-14 bg-rose-900 text-white rounded-2xl font-bold shadow-lg shadow-rose-900/20 active:scale-[0.98] transition hover:bg-rose-800 flex justify-center items-center gap-2 text-lg mt-2">
+                    <span>Entrar</span> <i class="ph ph-arrow-right"></i>
                 </button>
             </form>
-            <p v-if="errorMsg" class="mt-6 text-center text-sm font-bold text-red-500 bg-red-50 p-3 rounded-xl border border-red-100 flex items-center justify-center gap-2">
-                <i class="ph ph-warning-circle text-lg"></i> {{ errorMsg }}
-            </p>
+            <p v-if="errorMsg" class="mt-6 text-center text-xs font-bold text-red-500 bg-red-50 p-3 rounded-xl border border-red-100">{{ errorMsg }}</p>
         </div>
 
-        <div v-else class="flex flex-col h-full animate-fade-in bg-gray-50">
-            
-            <header class="pt-12 pb-4 px-6 glass z-20 flex justify-between items-center shrink-0 border-b border-gray-100 shadow-sm">
+        <div v-else class="flex flex-col h-full animate-fade-in">
+            <header class="pt-12 pb-4 px-6 glass z-20 flex justify-between items-center shrink-0">
                 <div>
                     <h2 class="text-xl font-serif text-rose-900 font-bold leading-none">Olá, {{ userDisplayName }}</h2>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold mt-1.5">Painel de Pacientes</p>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mt-1">Seus Pacientes</p>
                 </div>
-                <button @click="logout" class="w-10 h-10 rounded-full bg-gray-50 text-gray-600 hover:text-rose-900 hover:bg-rose-50 flex items-center justify-center border border-gray-200 transition">
+                <button @click="logout" class="w-10 h-10 rounded-full bg-white/60 text-rose-900 flex items-center justify-center border border-white shadow-sm active:bg-rose-100">
                     <i class="ph ph-sign-out text-lg"></i>
                 </button>
             </header>
 
-            <div v-if="view === 'list'" class="flex-1 overflow-y-auto px-5 py-6 space-y-4 hide-scrollbar z-0 relative">
+            <div v-if="view === 'list'" class="flex-1 overflow-y-auto p-5 space-y-4 hide-scrollbar z-0 pb-24">
                 
-                <div class="flex gap-3 mb-6 sticky top-0 z-30 pt-1">
-                    <div class="relative flex-1 group drop-shadow-sm">
+                <div class="flex gap-2 mb-2 sticky top-0 z-10 pt-1">
+                    <div class="relative flex-1">
                         <i class="ph ph-magnifying-glass absolute left-4 top-3.5 text-gray-400 text-lg"></i>
-                        <input type="text" v-model="searchTerm" placeholder="Buscar paciente..." class="w-full pl-11 pr-4 py-3 bg-white rounded-xl text-sm font-medium border border-gray-200 focus:ring-2 focus:ring-rose-200 outline-none">
+                        <input type="text" v-model="searchTerm" placeholder="Buscar..." class="w-full pl-11 pr-4 h-12 bg-white/80 backdrop-blur-md rounded-2xl text-sm border border-white shadow-sm focus:ring-2 focus:ring-rose-200 outline-none">
                     </div>
-                    <button @click="createNew" class="bg-rose-900 text-white w-12 h-11 rounded-xl flex items-center justify-center shadow-lg active:scale-95 transition hover:bg-rose-800">
+                    <button @click="createNew" class="bg-rose-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition">
                         <i class="ph ph-plus text-xl font-bold"></i>
                     </button>
                 </div>
 
-                <div v-if="filteredClients.length === 0" class="flex flex-col items-center justify-center py-20 opacity-60 space-y-4">
-                    <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center">
-                        <i class="ph ph-users text-3xl text-rose-300"></i>
-                    </div>
-                    <p class="text-sm font-bold text-gray-400">Nenhuma ficha encontrada.</p>
+                <div v-if="filteredClients.length === 0" class="flex flex-col items-center justify-center py-20 opacity-40 space-y-3">
+                    <i class="ph ph-clipboard-text text-4xl text-rose-900"></i>
+                    <p class="text-sm font-medium">Nenhuma ficha ainda.</p>
                 </div>
 
-                <div v-for="c in filteredClients" :key="c.id" @click="openClient(c)" class="cursor-pointer bg-white p-5 rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100 relative group active:scale-[0.99] transition hover:border-rose-200 hover:shadow-md">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex items-center gap-3.5">
-                            <div class="w-11 h-11 rounded-full bg-rose-50 flex items-center justify-center text-rose-800 font-serif font-bold text-base border border-rose-100 shadow-sm">
+                <div v-for="c in filteredClients" :key="c.id" @click="openClient(c)" class="glass-card p-4 rounded-[24px] relative active:scale-[0.98] transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-rose-100/80 flex items-center justify-center text-rose-900 font-serif font-bold text-lg shadow-inner">
                                 {{ c.nome.charAt(0).toUpperCase() }}
                             </div>
                             <div>
-                                <h3 class="font-bold text-gray-900 text-base leading-tight">{{ c.nome }}</h3>
-                                <div class="flex items-center gap-3 text-xs text-gray-500 mt-1 font-medium">
+                                <h3 class="font-bold text-gray-800 text-lg leading-tight">{{ c.nome }}</h3>
+                                <div class="flex items-center gap-2 text-xs text-gray-500 mt-1">
                                     <span v-if="c.celular" class="flex items-center gap-1"><i class="ph ph-whatsapp-logo text-green-600"></i> {{ c.celular }}</span>
-                                    <span v-else class="text-gray-300">Sem telefone</span>
                                 </div>
                             </div>
                         </div>
-                        <span class="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-md border border-gray-100">
+                        <span class="text-[10px] font-bold bg-white/60 px-2 py-1 rounded-lg text-rose-400 uppercase tracking-wide border border-white">
                             {{ formatDate(c.data) }}
                         </span>
                     </div>
-                    
-                    <div class="flex gap-2 flex-wrap pl-[58px]">
-                         <span v-if="c.ha_medicamentos_uso" class="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-[10px] font-bold border border-blue-100">
-                            <i class="ph-fill ph-pill"></i> Meds
-                        </span>
-                        <span v-if="c.ha_alergia_medicamento || c.ha_alergia_outros" class="inline-flex items-center gap-1 px-2 py-1 bg-red-50 text-red-700 rounded-md text-[10px] font-bold border border-red-100">
-                            <i class="ph-fill ph-warning"></i> Alergia
-                        </span>
-                        <span v-if="c.hs_gestante_qtd" class="inline-flex items-center gap-1 px-2 py-1 bg-purple-50 text-purple-700 rounded-md text-[10px] font-bold border border-purple-100">
-                            <i class="ph-fill ph-baby"></i> Gestante
-                        </span>
+                    <div class="flex gap-1 flex-wrap pl-[60px]">
+                        <span v-if="c.ha_medicamentos_uso" class="px-2 py-0.5 bg-blue-50/80 text-blue-700 rounded-lg text-[9px] font-bold border border-blue-100">Meds</span>
+                        <span v-if="c.ha_alergia_medicamento || c.ha_alergia_outros" class="px-2 py-0.5 bg-red-50/80 text-red-700 rounded-lg text-[9px] font-bold border border-red-100">Alergia</span>
+                        <span v-if="c.hs_gestante_qtd" class="px-2 py-0.5 bg-purple-50/80 text-purple-700 rounded-lg text-[9px] font-bold border border-purple-100">Gestante</span>
                     </div>
                 </div>
-                <div class="h-20"></div>
             </div>
 
-            <div v-if="view === 'form'" class="fixed inset-0 z-50 bg-gray-50 flex flex-col animate-slide-up">
+            <div v-if="view === 'form'" class="fixed inset-0 z-40 bg-[#fdfafb] flex flex-col animate-slide-up">
                 
-                <div class="glass px-5 py-4 flex justify-between items-center border-b border-gray-200 shrink-0 sticky top-0 z-40 safe-top">
-                    <button @click="view = 'list'" class="flex items-center gap-1 text-gray-500 hover:text-gray-800 font-bold text-sm px-2 py-2 -ml-2 rounded-lg active:bg-gray-100">
-                        <i class="ph ph-caret-left text-lg"></i> Voltar
+                <div class="bg-white/90 backdrop-blur-md pt-10 pb-3 px-4 border-b border-gray-100 flex justify-between items-center shadow-sm shrink-0">
+                    <button @click="view = 'list'" class="w-10 h-10 flex items-center justify-center rounded-full active:bg-gray-100 text-gray-500">
+                        <i class="ph ph-caret-down text-2xl"></i>
                     </button>
-                    
-                    <h2 class="text-base font-bold text-gray-900 uppercase tracking-wide">
-                        {{ editingId ? 'Editar Ficha' : 'Nova Anamnese' }}
-                    </h2>
-
-                    <button @click="save" class="text-rose-900 font-bold text-sm px-3 py-1.5 bg-rose-50 rounded-lg hover:bg-rose-100 active:scale-95 transition">
-                        Salvar
+                    <h2 class="text-base font-bold text-gray-800">{{ editingId ? 'Editar Ficha' : 'Nova Ficha' }}</h2>
+                    <button v-if="editingId" @click="deleteClient" class="w-10 h-10 flex items-center justify-center rounded-full text-red-400 active:bg-red-50">
+                        <i class="ph ph-trash text-xl"></i>
                     </button>
+                    <div v-else class="w-10"></div>
                 </div>
 
-                <div class="flex-1 overflow-y-auto p-5 pb-32 space-y-6">
+                <div class="flex-1 overflow-y-auto p-6 space-y-8 pb-32 bg-gradient-to-b from-white to-rose-50">
                     
-                    <section class="section-card animate-fade-in">
-                        <div class="flex items-center gap-2 mb-5 pb-3 border-b border-gray-100">
-                            <div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-900"><i class="ph ph-user text-lg"></i></div>
-                            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Dados Pessoais</h3>
+                    <section class="space-y-2">
+                        <h3 class="flex items-center gap-2 text-xs font-bold text-rose-900 uppercase tracking-widest opacity-60 mb-2">
+                            <i class="ph ph-user text-lg"></i> Pessoal
+                        </h3>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Nome Completo</label>
+                            <input v-model="form.nome" class="input-field">
                         </div>
                         
-                        <div class="form-group">
-                            <label class="form-label">Nome Completo *</label>
-                            <input v-model="form.nome" placeholder="Ex: Maria Silva" class="input-field">
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4 form-group">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="form-label">Sexo</label>
-                                <div class="flex gap-2">
-                                    <label class="flex-1 cursor-pointer custom-checkbox">
+                                <label class="input-label">Sexo</label>
+                                <div class="flex gap-2 h-12">
+                                    <label class="flex-1 cursor-pointer custom-checkbox h-full">
                                         <input type="radio" v-model="form.sexo" value="F" class="hidden">
-                                        <div :class="form.sexo === 'F' ? 'bg-rose-500 text-white border-rose-500 shadow-md' : 'bg-white text-gray-500 border-gray-200'" class="border rounded-xl py-3 text-center text-sm font-bold transition">Fem</div>
+                                        <div :class="form.sexo === 'F' ? 'bg-rose-400 text-white border-rose-400' : 'bg-white border-gray-200 text-gray-400'" class="h-full border rounded-2xl flex items-center justify-center text-sm font-bold transition">Fem</div>
                                     </label>
-                                    <label class="flex-1 cursor-pointer custom-checkbox">
+                                    <label class="flex-1 cursor-pointer custom-checkbox h-full">
                                         <input type="radio" v-model="form.sexo" value="M" class="hidden">
-                                        <div :class="form.sexo === 'M' ? 'bg-blue-500 text-white border-blue-500 shadow-md' : 'bg-white text-gray-500 border-gray-200'" class="border rounded-xl py-3 text-center text-sm font-bold transition">Masc</div>
+                                        <div :class="form.sexo === 'M' ? 'bg-blue-400 text-white border-blue-400' : 'bg-white border-gray-200 text-gray-400'" class="h-full border rounded-2xl flex items-center justify-center text-sm font-bold transition">Masc</div>
                                     </label>
                                 </div>
                             </div>
-                            <div>
-                                <label class="form-label">Data Nasc.</label>
+                            <div class="input-group">
+                                <label class="input-label">Data Nasc.</label>
                                 <input v-model="form.nascimento" type="date" class="input-field">
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 form-group">
-                            <div>
-                                <label class="form-label">Idade</label>
-                                <input v-model="form.idade" type="number" inputmode="numeric" placeholder="Anos" class="input-field">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="input-group">
+                                <label class="input-label">Idade</label>
+                                <input v-model="form.idade" type="number" class="input-field">
                             </div>
-                            <div>
-                                <label class="form-label">Profissão</label>
-                                <input v-model="form.profissao" placeholder="Ex: Advogada" class="input-field">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Endereço</label>
-                            <div class="flex gap-2">
-                                <input v-model="form.endereco" placeholder="Rua, Bairro" class="input-field flex-1">
-                                <input v-model="form.numero" placeholder="Nº" class="input-field w-20 text-center">
+                            <div class="input-group">
+                                <label class="input-label">Profissão</label>
+                                <input v-model="form.profissao" class="input-field">
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 form-group">
-                            <div>
-                                <label class="form-label">Celular (WhatsApp)</label>
-                                <input v-model="form.celular" type="tel" inputmode="numeric" placeholder="(00) 00000-0000" class="input-field" id="cel">
-                            </div>
-                            <div>
-                                <label class="form-label">E-mail</label>
-                                <input v-model="form.email" type="email" placeholder="cliente@email.com" class="input-field">
-                            </div>
+                        <div class="input-group">
+                            <label class="input-label">Endereço</label>
+                            <input v-model="form.endereco" class="input-field">
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-gray-50">
-                            <label class="form-label text-gray-400">Origem (Como conheceu)</label>
-                            <div class="flex flex-wrap gap-2 mt-2">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="input-group">
+                                <label class="input-label">Celular (Zap)</label>
+                                <input v-model="form.celular" type="tel" id="cel" class="input-field">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Telefone</label>
+                                <input v-model="form.telefone" type="tel" class="input-field">
+                            </div>
+                        </div>
+                        
+                         <div class="input-group">
+                            <label class="input-label">Como conheceu?</label>
+                            <div class="flex flex-wrap gap-2">
                                 <label v-for="opt in ['Instagram', 'Indicação', 'Google', 'Passante']" :key="opt" class="cursor-pointer custom-checkbox">
                                     <input type="checkbox" :value="opt" v-model="form.como_conheceu" class="hidden">
-                                    <div class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-bold text-gray-500 transition hover:bg-gray-50">{{ opt }}</div>
+                                    <div class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-500 transition">{{ opt }}</div>
                                 </label>
                             </div>
                         </div>
                     </section>
 
-                    <section class="section-card animate-fade-in" style="animation-delay: 0.1s">
-                        <div class="flex items-center gap-2 mb-5 pb-3 border-b border-gray-100">
-                            <div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-900"><i class="ph ph-heartbeat text-lg"></i></div>
-                            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">História Clínica</h3>
+                    <section class="space-y-3">
+                        <h3 class="flex items-center gap-2 text-xs font-bold text-rose-900 uppercase tracking-widest opacity-60 mb-2">
+                            <i class="ph ph-heartbeat text-lg"></i> Saúde
+                        </h3>
+
+                        <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
+                            <toggle-question v-model="form.ha_medicamentos_uso" label="Usa medicamentos?"></toggle-question>
+                            <input v-if="form.ha_medicamentos_uso" v-model="form.ha_medicamentos_qual" placeholder="Quais?" class="input-detail">
                         </div>
 
-                        <div class="space-y-5">
-                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                <toggle-question v-model="form.ha_medicamentos_uso" label="Usa algum medicamento?"></toggle-question>
-                                <input v-if="form.ha_medicamentos_uso" v-model="form.ha_medicamentos_qual" placeholder="Cite os medicamentos..." class="input-detail mt-2 font-bold text-rose-600">
-                            </div>
-
-                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                <toggle-question v-model="form.ha_alergia_medicamento" label="Alergia a Medicamentos?" :is-danger="true"></toggle-question>
-                                <input v-if="form.ha_alergia_medicamento" v-model="form.ha_alergia_medicamento_qual" placeholder="Qual medicamento?" class="input-detail mt-2 text-red-600 font-bold placeholder-red-300 border-red-200">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Outras Alergias (Cosméticos/Alimentos)</label>
-                                <input v-model="form.ha_alergia_outros" placeholder="Descreva aqui..." class="input-field">
-                            </div>
-
-                            <div class="p-3 border border-dashed border-gray-300 rounded-xl">
-                                <div class="flex justify-between items-center mb-2">
-                                    <label class="text-xs font-bold text-gray-600">Ciclo Menstrual Regular?</label>
-                                    <div class="flex gap-2">
-                                        <button @click="form.ha_ciclo_normal = true" :class="form.ha_ciclo_normal === true ? 'bg-green-100 text-green-700 border-green-200' : 'bg-gray-100 text-gray-400'" class="px-3 py-1 rounded-lg text-xs font-bold border transition">Sim</button>
-                                        <button @click="form.ha_ciclo_normal = false" :class="form.ha_ciclo_normal === false ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-gray-100 text-gray-400'" class="px-3 py-1 rounded-lg text-xs font-bold border transition">Não</button>
-                                    </div>
-                                </div>
-                                <input v-if="form.ha_ciclo_normal === false" v-model="form.ha_ciclo_obs" placeholder="Descreva a irregularidade" class="input-detail">
-                            </div>
-
-                            <div>
-                                <label class="form-label mb-2">Condições Gerais</label>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <toggle-card v-model="form.ha_hipertensao" label="Hipertensão" icon="ph-heart-break"></toggle-card>
-                                    <toggle-card v-model="form.ha_gestante_qtd" label="Gestante" icon="ph-baby"></toggle-card>
-                                    <toggle-card v-model="form.ha_marcapasso" label="Marcapasso" icon="ph-lightning"></toggle-card>
-                                    <toggle-card v-model="form.ha_protese" label="Prótese Metal" icon="ph-screws"></toggle-card>
-                                </div>
-                                <input v-if="form.ha_protese" v-model="form.ha_protese_local" placeholder="Local da prótese?" class="input-detail mt-2">
-                            </div>
+                        <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
+                            <toggle-question v-model="form.ha_alergia_medicamento" label="Alergia a remédio?"></toggle-question>
+                            <input v-if="form.ha_alergia_medicamento" v-model="form.ha_alergia_medicamento_qual" placeholder="Qual?" class="input-detail text-red-500">
                         </div>
-                    </section>
-
-                    <section class="section-card animate-fade-in" style="animation-delay: 0.2s">
-                        <div class="flex items-center gap-2 mb-5 pb-3 border-b border-gray-100">
-                            <div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-900"><i class="ph ph-coffee text-lg"></i></div>
-                            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Hábitos de Vida</h3>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Outras Alergias</label>
+                            <input v-model="form.ha_alergia_outros" class="input-field">
                         </div>
 
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-2 gap-3">
-                                <toggle-card v-model="form.hs_fuma" label="Fumante" icon="ph-cigarette"></toggle-card>
-                                <toggle-card v-model="form.hs_alcool" label="Ingere Álcool" icon="ph-beer-bottle"></toggle-card>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Funcionamento Intestino</label>
-                                <select v-model="form.ha_intestino" class="input-field bg-white">
-                                    <option value="">Selecione...</option>
-                                    <option value="Regular (Diário)">Regular (Todos os dias)</option>
-                                    <option value="Preso (2-3 dias)">Preso (A cada 2-3 dias)</option>
-                                    <option value="Muito Preso (+3 dias)">Constipado (+3 dias)</option>
-                                </select>
-                            </div>
-
-                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                <toggle-question v-model="form.hs_sol" label="Exposição Solar Frequente?"></toggle-question>
-                                <toggle-question v-model="form.hs_protetor" label="Usa Protetor Solar Diário?" class="mt-3"></toggle-question>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Ingestão de Água</label>
+                        <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
+                             <div class="flex justify-between items-center mb-2">
+                                <label class="text-sm font-medium text-gray-700">Ciclo Menstrual Regular?</label>
                                 <div class="flex gap-2">
-                                    <button v-for="qtd in ['-1L', '1L-2L', '+2L']" :key="qtd" @click="form.hs_liquido_qtd = qtd" 
-                                        :class="form.hs_liquido_qtd === qtd ? 'bg-blue-500 text-white shadow-md' : 'bg-white border border-gray-200 text-gray-500'"
-                                        class="flex-1 py-3 rounded-xl text-sm font-bold transition">
-                                        {{ qtd }}
-                                    </button>
+                                    <button @click="form.ha_ciclo_normal = true" :class="form.ha_ciclo_normal === true ? 'bg-green-100 text-green-700' : 'bg-gray-100'" class="w-10 h-8 rounded-lg font-bold text-xs transition">Sim</button>
+                                    <button @click="form.ha_ciclo_normal = false" :class="form.ha_ciclo_normal === false ? 'bg-rose-100 text-rose-700' : 'bg-gray-100'" class="w-10 h-8 rounded-lg font-bold text-xs transition">Não</button>
                                 </div>
                             </div>
+                            <input v-if="form.ha_ciclo_normal === false" v-model="form.ha_ciclo_obs" placeholder="O que ocorre?" class="input-detail">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <toggle-card v-model="form.ha_hipertensao" label="Hipertensão" icon="ph-heart-break"></toggle-card>
+                            <toggle-card v-model="form.ha_marcapasso" label="Marcapasso" icon="ph-lightning"></toggle-card>
+                            <toggle-card v-model="form.ha_caibra" label="Cãibras" icon="ph-lightning-slash"></toggle-card>
+                            <toggle-card v-model="form.ha_hernia" label="Hérnia" icon="ph-first-aid"></toggle-card>
+                            <toggle-card v-model="form.ha_varizes" label="Varizes" icon="ph-person-simple-walk"></toggle-card>
+                            <toggle-card v-model="form.ha_protese" label="Prótese" icon="ph-screws"></toggle-card>
+                        </div>
+                         <input v-if="form.ha_varizes" v-model="form.ha_varizes_local" placeholder="Local das varizes?" class="input-field">
+                         <input v-if="form.ha_protese" v-model="form.ha_protese_local" placeholder="Local da prótese?" class="input-field">
+
+                    </section>
+
+                    <section class="space-y-3">
+                        <h3 class="flex items-center gap-2 text-xs font-bold text-rose-900 uppercase tracking-widest opacity-60 mb-2">
+                            <i class="ph ph-coffee text-lg"></i> Hábitos
+                        </h3>
+
+                         <div class="grid grid-cols-2 gap-3">
+                            <toggle-card v-model="form.hs_fuma" label="Fuma" icon="ph-cigarette"></toggle-card>
+                            <toggle-card v-model="form.hs_alcool" label="Álcool" icon="ph-beer-bottle"></toggle-card>
+                        </div>
+
+                         <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
+                            <toggle-question v-model="form.hs_atividade_fisica" label="Atividade Física?"></toggle-question>
+                            <input v-if="form.hs_atividade_fisica" v-model="form.hs_atividade_qual" placeholder="Qual e frequência?" class="input-detail">
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Ingestão de Água</label>
+                            <div class="flex gap-2">
+                                <button v-for="qtd in ['Pouca', 'Normal', 'Muita']" :key="qtd" @click="form.hs_liquido_qtd = qtd" 
+                                    :class="form.hs_liquido_qtd === qtd ? 'bg-blue-400 text-white' : 'bg-white border border-gray-200 text-gray-400'"
+                                    class="flex-1 h-10 rounded-xl text-xs font-bold transition">
+                                    {{ qtd }}
+                                </button>
+                            </div>
+                        </div>
+
+                         <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
+                            <toggle-question v-model="form.hs_sol" label="Toma sol frequente?"></toggle-question>
+                             <toggle-question v-model="form.hs_protetor" label="Usa protetor solar?" class="mt-3"></toggle-question>
                         </div>
                     </section>
 
-                    <section class="section-card animate-fade-in" style="animation-delay: 0.3s">
-                        <label class="form-label">Anotações Livres</label>
-                        <textarea v-model="form.obs_final" rows="4" placeholder="Escreva detalhes específicos do tratamento ou observações da pele..." class="w-full p-4 bg-yellow-50/50 rounded-xl border border-yellow-100 focus:bg-white focus:ring-2 focus:ring-yellow-200 outline-none text-sm text-gray-800 leading-relaxed"></textarea>
+                    <section class="space-y-2">
+                        <h3 class="flex items-center gap-2 text-xs font-bold text-rose-900 uppercase tracking-widest opacity-60 mb-2">
+                            <i class="ph ph-note-pencil text-lg"></i> Notas
+                        </h3>
+                        <textarea v-model="form.obs_final" rows="4" placeholder="Observações finais..." class="w-full p-4 bg-white rounded-3xl border-none focus:ring-2 focus:ring-rose-200 outline-none text-sm text-gray-700 shadow-sm"></textarea>
                     </section>
-
-                    <div v-if="editingId" class="mt-8 mb-20 text-center border-t border-gray-200 pt-8">
-                        <button @click="deleteClient" class="text-red-400 text-xs font-bold uppercase tracking-widest hover:text-red-600 transition flex items-center justify-center gap-2 mx-auto px-4 py-2 rounded-lg hover:bg-red-50">
-                            <i class="ph ph-trash"></i> Excluir esta ficha permanentemente
-                        </button>
-                    </div>
-
                 </div>
 
-                <div class="absolute bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-gray-100 flex justify-between items-center z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
-                    <div class="text-xs text-gray-400 font-bold ml-2">
-                        {{ editingId ? 'Editando...' : 'Novo Cadastro' }}
-                    </div>
-                    <button @click="save" class="bg-rose-900 text-white px-8 py-3.5 rounded-xl shadow-lg shadow-rose-900/20 font-bold flex items-center gap-2 active:scale-95 transition hover:bg-rose-800 text-sm">
-                        <i class="ph ph-check-circle text-xl"></i> Salvar Ficha
+                <div class="fixed bottom-0 left-0 right-0 p-5 bg-white/80 backdrop-blur-md border-t border-gray-100 z-50">
+                    <button @click="save" class="w-full h-14 bg-rose-900 text-white rounded-2xl shadow-xl font-bold flex items-center justify-center gap-3 active:scale-95 transition hover:bg-rose-800 text-lg">
+                        <i class="ph ph-floppy-disk text-2xl"></i> {{ editingId ? 'Salvar' : 'Finalizar' }}
                     </button>
                 </div>
             </div>
@@ -362,21 +316,20 @@
 
     <script type="text/x-template" id="toggle-question-tpl">
         <label class="flex items-center justify-between cursor-pointer group select-none">
-            <span :class="isDanger && modelValue ? 'text-red-600' : 'text-gray-700'" class="text-sm font-bold group-hover:opacity-80 transition">{{ label }}</span>
+            <span class="text-sm font-medium text-gray-700">{{ label }}</span>
             <div class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" :checked="modelValue" @change="$emit('update:modelValue', $event.target.checked)" class="sr-only peer">
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:shadow-sm after:transition-all peer-checked:bg-rose-500"></div>
+                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500"></div>
             </div>
         </label>
     </script>
 
     <script type="text/x-template" id="toggle-card-tpl">
-        <label class="flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition relative overflow-hidden h-24 shadow-sm" 
-            :class="modelValue ? 'bg-rose-50 border-rose-300 text-rose-900 ring-1 ring-rose-200' : 'bg-white border-gray-100 text-gray-400 hover:bg-gray-50'">
-            <i :class="['ph', icon, modelValue ? 'text-rose-500' : 'text-gray-300']" class="text-3xl mb-2 transition-colors"></i>
-            <span class="text-[10px] font-bold uppercase tracking-wide text-center leading-tight">{{ label }}</span>
+        <label class="flex flex-col items-center justify-center p-3 bg-white border rounded-2xl cursor-pointer transition relative overflow-hidden h-20 shadow-sm" 
+            :class="modelValue ? 'border-rose-400 bg-rose-50' : 'border-gray-100'">
+            <i :class="['ph', icon, modelValue ? 'text-rose-600' : 'text-gray-300']" class="text-2xl mb-1"></i>
+            <span :class="modelValue ? 'text-rose-900' : 'text-gray-400'" class="text-[10px] font-bold uppercase tracking-wide text-center">{{ label }}</span>
             <input type="checkbox" :checked="modelValue" @change="$emit('update:modelValue', $event.target.checked)" class="hidden">
-            <div v-if="modelValue" class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
         </label>
     </script>
 
@@ -385,7 +338,6 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // CONFIGURAÇÃO DO FIREBASE (MANTIDA)
         const firebaseConfig = {
             apiKey: "AIzaSyBT9OUbgtGQWK51ixifL1lxNxbxvH5XTTs",
             authDomain: "easy-anamnese-prd.firebaseapp.com",
@@ -401,7 +353,7 @@
         const { createApp, ref, computed } = Vue;
 
         const ToggleQuestion = {
-            props: ['modelValue', 'label', 'isDanger'],
+            props: ['modelValue', 'label'],
             emits: ['update:modelValue'],
             template: '#toggle-question-tpl'
         };
@@ -429,17 +381,28 @@
                     nome: '', sexo: '', nascimento: '', idade: '', profissao: '', 
                     endereco: '', numero: '', email: '', celular: '', telefone: '', como_conheceu: [],
                     ha_medicamentos_uso: false, ha_medicamentos_qual: '',
+                    ha_exames_periodicos: false, ha_exames_qual: '', ha_exames_ultima_vez: '',
                     ha_alergia_medicamento: false, ha_alergia_medicamento_qual: '', ha_alergia_outros: '',
-                    ha_ciclo_normal: null, ha_ciclo_obs: '',
-                    ha_hipertensao: false, ha_marcapasso: false, ha_gestante_qtd: false,
+                    ha_intestino: '', ha_ciclo_normal: null, ha_ciclo_obs: '',
+                    ha_anticoncepcional: false, ha_anticoncepcional_qual: '',
+                    ha_tpm_sintomas: [],
+                    ha_hipertensao: false, ha_marcapasso: false, ha_caibra: false, 
+                    ha_varizes: false, ha_varizes_local: '',
                     ha_protese: false, ha_protese_local: '',
-                    hs_fuma: false, hs_alcool: false, ha_intestino: '',
-                    hs_sol: false, hs_protetor: false, hs_liquido_qtd: '',
-                    obs_final: ''
+                    ha_hernia: false, ha_cancer: false, ha_cancer_obs: '',
+                    ha_outras_doencas: '',
+                    hs_vestuario: '', hs_sono: '',
+                    hs_atividade_fisica: false, hs_atividade_qual: '', hs_atividade_freq: '',
+                    hs_alimentacao: [], hs_horario_comer: '',
+                    hs_dieta: false, hs_dieta_como: '',
+                    hs_liquido: false, hs_liquido_qtd: '',
+                    hs_sol: false, hs_sol_freq: '', hs_protetor: false, hs_protetor_freq: '',
+                    hs_alcool: false, hs_alcool_freq: '', hs_fuma: false,
+                    hs_proc_estetico: '', hs_cirurgia: false, hs_cirurgia_qual: '',
+                    hs_gestante_qtd: '', hs_aborto_qtd: '', hs_tipo_parto: '', obs_final: ''
                 };
 
                 const form = ref({ ...emptyForm });
-
                 const userDisplayName = computed(() => user.value?.email ? user.value.email.split('@')[0] : 'Profissional');
                 
                 const filteredClients = computed(() => {
@@ -466,7 +429,7 @@
                 const loginEmail = async () => {
                     loading.value = true; errorMsg.value = '';
                     try { await signInWithEmailAndPassword(auth, email.value, password.value); }
-                    catch (e) { errorMsg.value = "E-mail ou senha inválidos."; loading.value = false; }
+                    catch (e) { errorMsg.value = "Dados incorretos."; loading.value = false; }
                 };
 
                 const logout = () => { signOut(auth); email.value = ''; password.value = ''; };
@@ -485,48 +448,31 @@
 
                 const deleteClient = async () => {
                     if(!editingId.value) return;
-                    if(!confirm("Tem certeza absoluta? Esta ação não pode ser desfeita.")) return;
-                    
+                    if(!confirm("Excluir esta ficha?")) return;
                     loading.value = true;
                     try {
                         await deleteDoc(doc(db, "users", user.value.uid, "anamneses", editingId.value));
                         view.value = 'list';
-                    } catch (e) {
-                        alert("Erro ao excluir: " + e.message);
-                    } finally {
-                        loading.value = false;
-                    }
+                    } catch (e) { alert("Erro: " + e.message); } 
+                    finally { loading.value = false; }
                 };
 
                 const save = async () => {
-                    if (!form.value.nome) return alert("Por favor, preencha o Nome do cliente.");
-                    
+                    if (!form.value.nome) return alert("Preencha o nome!");
+                    if (!confirm("Salvar dados?")) return;
                     loading.value = true;
-                    const dataToSave = {
-                        ...form.value,
-                        usuario_id: user.value.uid,
-                    };
-                    
-                    if(!editingId.value) {
-                         dataToSave.data = serverTimestamp();
-                    }
+                    const dataToSave = { ...form.value, usuario_id: user.value.uid };
+                    if(!editingId.value) dataToSave.data = serverTimestamp();
 
                     try {
                         const colRef = collection(db, "users", user.value.uid, "anamneses");
-                        if (editingId.value) {
-                            await updateDoc(doc(colRef, editingId.value), dataToSave);
-                        } else {
-                            await addDoc(colRef, dataToSave);
-                        }
+                        if (editingId.value) await updateDoc(doc(colRef, editingId.value), dataToSave);
+                        else await addDoc(colRef, dataToSave);
                         view.value = 'list';
-                    } catch (e) { 
-                        alert("Erro ao salvar: " + e.message); 
-                    } finally { 
-                        loading.value = false; 
-                    }
+                    } catch (e) { alert("Erro: " + e.message); } 
+                    finally { loading.value = false; }
                 };
-
-                // Aplica máscara ao celular quando o modal abre (simples watch)
+                
                 const { watch, nextTick } = Vue;
                 watch(() => view.value, (newVal) => {
                     if(newVal === 'form') {
