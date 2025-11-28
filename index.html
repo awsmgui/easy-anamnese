@@ -3,105 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Easy Anamnese Pro</title>
+    <title>Easy Anamnese</title>
     
-    <!-- PWA -->
+    <!-- Configuração PWA (Ícone e Cor) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#fff1f2">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2936/2936886.png">
 
-    <!-- Estilos -->
+    <!-- Fontes e Bibliotecas -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <!-- Máscara para telefone/datas -->
-    <script src="https://unpkg.com/imask"></script>
 
+    <!-- Configuração Visual (Tailwind) -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { serif: ['"Playfair Display"', 'serif'], sans: ['"Lato"', 'sans-serif'] },
-                    colors: { rose: { 50: '#FFF0F5', 100: '#FFE4E1', 300: '#F08080', 500: '#E9967A', 900: '#8B4513' } },
-                    animation: { 'fade-in': 'fadeIn 0.5s ease-out' },
-                    keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
+                    fontFamily: { 
+                        serif: ['"Playfair Display"', 'serif'], 
+                        sans: ['"Lato"', 'sans-serif'] 
+                    },
+                    colors: { 
+                        rose: { 50: '#FFF0F5', 100: '#FFE4E1', 300: '#F08080', 500: '#E9967A', 900: '#8B4513' } 
+                    },
+                    animation: { 'fade-in': 'fadeIn 0.4s ease-out' },
+                    keyframes: { 
+                        fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } 
+                    }
                 }
             }
         }
     </script>
+
     <style>
+        /* Estilos Personalizados */
         body { -webkit-tap-highlight-color: transparent; user-select: none; }
-        .glass { background: rgba(255, 255, 255, 0.90); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.6); }
+        
+        /* Efeito de Vidro (Glassmorphism) */
+        .glass { 
+            background: rgba(255, 255, 255, 0.92); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px); 
+            border-bottom: 1px solid rgba(255,255,255,0.6); 
+        }
+        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         [v-cloak] { display: none; }
         
-        /* Estilo para Checkboxes bonitos */
-        .custom-checkbox input:checked + div { background-color: #E9967A; border-color: #E9967A; color: white; }
-        .custom-checkbox input:checked + div i { display: block; }
+        /* Classes Utilitárias para Inputs e Cards */
+        .input-std { @apply w-full p-4 bg-gray-50/80 rounded-2xl border-none focus:bg-white focus:ring-2 focus:ring-rose-200 outline-none transition text-sm font-medium text-gray-700 placeholder-gray-400 shadow-sm; }
+        .input-detail { @apply w-full p-3 bg-rose-50/50 rounded-xl border-b border-rose-200 focus:bg-white outline-none text-xs text-rose-900 placeholder-rose-300 mt-2 animate-fade-in; }
+        .section-title { @apply flex items-center gap-2 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 p-3 rounded-xl mb-4 mt-6; }
+        .question-card { @apply p-4 bg-white border border-gray-50 rounded-2xl shadow-sm transition hover:shadow-md; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-rose-50 via-white to-rose-100 text-gray-700 h-screen w-screen overflow-hidden antialiased">
     
     <div id="app" v-cloak class="h-full flex flex-col relative max-w-md mx-auto bg-white/40 sm:border-x sm:border-white/50 shadow-2xl">
 
-        <!-- LOADING -->
+        <!-- LOADING SPINNER -->
         <div v-if="loading" class="absolute inset-0 z-50 flex items-center justify-center bg-white/90 backdrop-blur-md">
-            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-rose-900"></div>
+            <div class="flex flex-col items-center gap-3">
+                <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-rose-900"></div>
+                <span class="text-xs font-bold text-rose-900 uppercase tracking-widest">Carregando...</span>
+            </div>
         </div>
 
-        <!-- TELA LOGIN -->
+        <!-- TELA 1: LOGIN -->
         <div v-if="!user" class="flex flex-col justify-center h-full p-8 animate-fade-in relative">
             <div class="text-center mb-10">
                 <div class="inline-flex p-5 rounded-full bg-gradient-to-tr from-rose-100 to-white shadow-sm mb-4">
                     <i class="ph ph-sparkle text-4xl text-rose-900"></i>
                 </div>
                 <h1 class="text-4xl font-serif text-rose-900 mb-2">Easy Anamnese</h1>
-                <p class="text-[10px] font-bold tracking-[0.3em] text-rose-400 uppercase">Ficha Completa</p>
+                <p class="text-[10px] font-bold tracking-[0.3em] text-rose-400 uppercase">Gestão Profissional</p>
             </div>
 
-            <form @submit.prevent="loginEmail" class="space-y-5 bg-white/60 p-8 rounded-[32px] shadow-xl border border-white/80">
-                <input v-model="email" type="email" placeholder="E-mail" class="w-full p-4 bg-gray-50/80 rounded-2xl border-none focus:ring-2 focus:ring-rose-200 outline-none transition text-sm font-medium">
-                <input v-model="password" type="password" placeholder="Senha" class="w-full p-4 bg-gray-50/80 rounded-2xl border-none focus:ring-2 focus:ring-rose-200 outline-none transition text-sm font-medium">
-                <button type="submit" class="w-full bg-rose-900 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition hover:bg-rose-800 flex justify-center items-center gap-2 mt-4">
-                    <span>Entrar</span> <i class="ph ph-arrow-right"></i>
+            <form @submit.prevent="loginEmail" class="space-y-4 bg-white/70 p-8 rounded-[32px] shadow-xl border border-white/80 backdrop-blur-sm">
+                <div class="space-y-1">
+                    <label class="ml-3 text-[10px] font-bold text-gray-400 uppercase">E-mail</label>
+                    <input v-model="email" type="email" class="input-std">
+                </div>
+                <div class="space-y-1">
+                    <label class="ml-3 text-[10px] font-bold text-gray-400 uppercase">Senha</label>
+                    <input v-model="password" type="password" class="input-std">
+                </div>
+                <button type="submit" class="w-full bg-rose-900 text-white py-4 rounded-2xl font-bold shadow-lg shadow-rose-900/20 active:scale-[0.98] transition hover:bg-rose-800 flex justify-center items-center gap-2 mt-2">
+                    <span>Entrar</span> <i class="ph ph-arrow-right font-bold"></i>
                 </button>
             </form>
-            <p v-if="errorMsg" class="mt-6 text-center text-xs font-bold text-rose-600 bg-rose-50 p-3 rounded-xl">{{ errorMsg }}</p>
+            
+            <p v-if="errorMsg" class="mt-6 text-center text-xs font-bold text-rose-600 bg-rose-50 p-3 rounded-xl border border-rose-100 flex items-center justify-center gap-2 animate-fade-in">
+                <i class="ph ph-warning-circle text-lg"></i> {{ errorMsg }}
+            </p>
         </div>
 
-        <!-- APP LOGADO -->
+        <!-- TELA 2: APLICAÇÃO (Logado) -->
         <div v-else class="flex flex-col h-full animate-fade-in">
-            <!-- Header -->
+            
+            <!-- Header Fixo -->
             <header class="pt-14 pb-5 px-6 glass z-20 flex justify-between items-center shrink-0 shadow-sm">
                 <div>
                     <h2 class="text-xl font-serif text-rose-900 font-bold leading-none">Olá, {{ userDisplayName }}</h2>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold mt-1">Painel de Fichas</p>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold mt-1">Carteira de Clientes</p>
                 </div>
-                <button @click="logout" class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-50 to-white text-rose-900 flex items-center justify-center border border-rose-100">
+                <button @click="logout" class="w-10 h-10 rounded-full bg-white text-rose-900 flex items-center justify-center shadow-sm border border-gray-100 hover:bg-rose-50 transition">
                     <i class="ph ph-sign-out text-lg"></i>
                 </button>
             </header>
 
-            <!-- Lista de Clientes -->
+            <!-- VISTA: LISTA DE FICHAS -->
             <div v-if="view === 'list'" class="flex-1 overflow-y-auto p-6 space-y-4 hide-scrollbar z-0">
+                <!-- Barra de Busca -->
                 <div class="flex gap-3 mb-2 sticky top-0 z-10">
                     <div class="relative flex-1 group">
-                        <i class="ph ph-magnifying-glass absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="text" v-model="searchTerm" placeholder="Buscar..." class="w-full pl-11 pr-4 py-3 bg-white/80 backdrop-blur-md rounded-2xl text-sm border border-white shadow-sm focus:ring-2 focus:ring-rose-100 outline-none">
+                        <i class="ph ph-magnifying-glass absolute left-4 top-3.5 text-gray-400 group-focus-within:text-rose-500 transition"></i>
+                        <input type="text" v-model="searchTerm" placeholder="Buscar por nome..." class="w-full pl-11 pr-4 py-3 bg-white/90 backdrop-blur-md rounded-2xl text-sm border border-white shadow-sm focus:ring-2 focus:ring-rose-100 outline-none transition">
                     </div>
-                    <button @click="createNew" class="bg-rose-900 text-white w-12 h-11 rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition">
+                    <button @click="createNew" class="bg-rose-900 text-white w-12 h-11 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-900/30 active:scale-90 transition hover:bg-rose-800">
                         <i class="ph ph-plus text-xl font-bold"></i>
                     </button>
                 </div>
 
+                <!-- Estado Vazio -->
                 <div v-if="filteredClients.length === 0" class="flex flex-col items-center justify-center py-20 opacity-50 space-y-3">
-                    <i class="ph ph-clipboard-text text-3xl text-rose-300"></i>
+                    <div class="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center">
+                        <i class="ph ph-clipboard-text text-3xl text-rose-300"></i>
+                    </div>
                     <p class="text-sm font-medium text-gray-400">Nenhuma ficha encontrada.</p>
                 </div>
 
-                <div v-for="c in filteredClients" :key="c.id" class="bg-white p-5 rounded-[24px] shadow-sm border border-white relative group active:scale-[0.98] transition hover:shadow-md">
+                <!-- Cards dos Clientes -->
+                <div v-for="c in filteredClients" :key="c.id" @click="openClient(c)" class="cursor-pointer bg-white p-5 rounded-[24px] shadow-sm border border-white relative group active:scale-[0.98] transition hover:shadow-md">
                     <div class="flex justify-between items-start mb-3">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 font-serif font-bold text-sm border border-gray-100">
@@ -118,298 +154,227 @@
                             {{ formatDate(c.data) }}
                         </span>
                     </div>
+                    <!-- Tags de Resumo -->
                     <div class="flex gap-2 flex-wrap pl-[52px]">
-                        <span v-if="c.ha_medicamentos_uso" class="px-2 py-0.5 bg-amber-50 text-amber-700 rounded-lg text-[9px] font-bold border border-amber-100">Meds</span>
-                        <span v-if="c.ha_alergia_medicamento || c.ha_alergia_outros" class="px-2 py-0.5 bg-red-50 text-red-700 rounded-lg text-[9px] font-bold border border-red-100">Alergia</span>
-                        <span v-if="c.hs_gestante_qtd" class="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-lg text-[9px] font-bold border border-purple-100">Gestante/Mãe</span>
+                        <span v-if="c.ha_medicamentos_uso" class="px-2 py-0.5 bg-amber-50 text-amber-700 rounded-lg text-[9px] font-bold border border-amber-100 flex gap-1 items-center"><i class="ph ph-pill"></i> Meds</span>
+                        <span v-if="c.ha_alergia_medicamento || c.ha_alergia_outros_bool" class="px-2 py-0.5 bg-red-50 text-red-700 rounded-lg text-[9px] font-bold border border-red-100 flex gap-1 items-center"><i class="ph ph-warning"></i> Alergia</span>
+                        <span v-if="c.hs_gestante_qtd" class="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-lg text-[9px] font-bold border border-purple-100 flex gap-1 items-center"><i class="ph ph-baby"></i> Mãe</span>
+                        <span v-if="!c.ha_medicamentos_uso && !c.ha_alergia_medicamento && !c.hs_gestante_qtd" class="px-2 py-0.5 bg-green-50 text-green-700 rounded-lg text-[9px] font-bold border border-green-100 flex gap-1 items-center"><i class="ph ph-check-circle"></i> Ok</span>
                     </div>
                 </div>
                 <div class="h-24"></div>
             </div>
 
-            <!-- Formulário Completo -->
-            <div v-if="view === 'form'" class="flex-1 overflow-y-auto bg-white rounded-t-[40px] shadow-[0_-10px_60px_rgba(0,0,0,0.15)] mt-4 animate-fade-in relative z-30 pb-32">
-                <div class="sticky top-0 bg-white/95 backdrop-blur-sm p-6 pb-4 z-20 flex justify-between items-center border-b border-gray-50">
-                    <h2 class="text-xl font-serif text-rose-900 font-bold">Nova Anamnese</h2>
-                    <button @click="view = 'list'" class="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-rose-900 transition">
-                        <i class="ph ph-x font-bold text-lg"></i>
-                    </button>
+            <!-- VISTA: FORMULÁRIO (Ficha Completa) -->
+            <div v-if="view === 'form'" class="flex-1 overflow-y-auto bg-white rounded-t-[40px] shadow-[0_-10px_60px_rgba(0,0,0,0.15)] mt-4 animate-fade-in relative z-30 pb-40">
+                
+                <!-- Barra de Ações do Form -->
+                <div class="sticky top-0 bg-white/95 backdrop-blur-sm p-6 pb-4 z-20 flex justify-between items-center border-b border-gray-50 shadow-sm">
+                    <h2 class="text-lg font-serif text-rose-900 font-bold">{{ editingId ? 'Editar Ficha' : 'Nova Anamnese' }}</h2>
+                    <div class="flex gap-2">
+                        <!-- Botão Excluir (Só aparece se estiver editando) -->
+                        <button v-if="editingId" @click="deleteClient" class="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center text-red-400 hover:bg-red-100 transition">
+                            <i class="ph ph-trash font-bold text-lg"></i>
+                        </button>
+                        <!-- Botão Fechar -->
+                        <button @click="view = 'list'" class="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-rose-900 transition">
+                            <i class="ph ph-x font-bold text-lg"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="p-6 space-y-6">
+                <div class="p-6">
                     
-                    <!-- 1. DADOS PESSOAIS -->
-                    <section class="space-y-4">
-                        <h3 class="flex items-center gap-2 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 p-2 rounded-lg">
-                            <i class="ph ph-user text-lg"></i> Dados Pessoais
-                        </h3>
+                    <!-- SEÇÃO 1: DADOS PESSOAIS -->
+                    <div class="section-title"><i class="ph ph-user text-lg"></i> Dados Pessoais</div>
+                    <div class="space-y-3">
+                        <input v-model="form.nome" placeholder="Nome Completo *" class="input-std">
                         
-                        <input v-model="form.nome" placeholder="Nome Completo" class="input-field">
-                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[10px] text-gray-400 font-bold uppercase ml-2">Nascimento</label>
+                                <input v-model="form.nascimento" type="date" class="input-std mt-1">
+                            </div>
+                            <input v-model="form.idade" type="number" placeholder="Idade" class="input-std self-end">
+                        </div>
+
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="text-[10px] text-gray-400 font-bold uppercase ml-2">Sexo</label>
                                 <div class="flex gap-2 mt-1">
-                                    <label class="flex-1 cursor-pointer custom-checkbox">
+                                    <label class="flex-1 cursor-pointer">
                                         <input type="radio" v-model="form.sexo" value="F" class="hidden">
-                                        <div :class="form.sexo === 'F' ? 'bg-rose-400 text-white border-rose-400' : 'bg-white text-gray-500 border-gray-200'" class="border rounded-xl py-3 text-center text-sm font-bold transition">Feminino</div>
+                                        <div :class="form.sexo === 'F' ? 'bg-rose-400 text-white border-rose-400' : 'bg-white text-gray-400 border-gray-200'" class="border rounded-xl py-3 text-center text-xs font-bold transition">Fem</div>
                                     </label>
-                                    <label class="flex-1 cursor-pointer custom-checkbox">
+                                    <label class="flex-1 cursor-pointer">
                                         <input type="radio" v-model="form.sexo" value="M" class="hidden">
-                                        <div :class="form.sexo === 'M' ? 'bg-blue-400 text-white border-blue-400' : 'bg-white text-gray-500 border-gray-200'" class="border rounded-xl py-3 text-center text-sm font-bold transition">Masculino</div>
+                                        <div :class="form.sexo === 'M' ? 'bg-blue-400 text-white border-blue-400' : 'bg-white text-gray-400 border-gray-200'" class="border rounded-xl py-3 text-center text-xs font-bold transition">Masc</div>
                                     </label>
                                 </div>
                             </div>
-                            <div>
-                                <label class="text-[10px] text-gray-400 font-bold uppercase ml-2">Nascimento</label>
-                                <input v-model="form.nascimento" type="date" class="input-field mt-1">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <input v-model="form.idade" type="number" placeholder="Idade" class="input-field">
-                            <input v-model="form.profissao" placeholder="Profissão" class="input-field">
+                            <input v-model="form.profissao" placeholder="Profissão" class="input-std self-end">
                         </div>
 
                         <div class="space-y-2">
-                            <input v-model="form.endereco" placeholder="Endereço" class="input-field">
-                            <div class="flex gap-2">
-                                <input v-model="form.numero" placeholder="Nº" class="input-field w-24">
-                                <input v-model="form.email" type="email" placeholder="E-mail" class="input-field flex-1">
-                            </div>
+                            <input v-model="form.endereco" placeholder="Endereço" class="input-std">
+                            <input v-model="form.email" type="email" placeholder="E-mail" class="input-std">
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
-                            <input v-model="form.celular" type="tel" placeholder="Celular (WhatsApp)" class="input-field" id="cel">
-                            <input v-model="form.telefone" type="tel" placeholder="Telefone Fixo" class="input-field">
+                            <input v-model="form.celular" type="tel" placeholder="WhatsApp" class="input-std">
+                            <input v-model="form.telefone" type="tel" placeholder="Tel. Fixo" class="input-std">
                         </div>
+                    </div>
 
-                        <div>
-                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-2">Como nos conheceu?</label>
-                            <div class="flex flex-wrap gap-2 mt-1">
-                                <label v-for="opt in ['Internet', 'Indicação', 'Publicidade', 'Outros']" :key="opt" class="cursor-pointer custom-checkbox">
-                                    <input type="checkbox" :value="opt" v-model="form.como_conheceu" class="hidden">
-                                    <div class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-bold text-gray-500 transition">{{ opt }}</div>
-                                </label>
-                            </div>
-                        </div>
-                    </section>
+                    <!-- SEÇÃO 2: HISTÓRIA ATUAL (H.A.) -->
+                    <div class="section-title"><i class="ph ph-heartbeat text-lg"></i> História Clínica</div>
+                    <div class="space-y-3">
+                        <toggle-question v-model="form.ha_medicamentos_uso" label="Usa medicamentos?">
+                            <input v-model="form.ha_medicamentos_qual" placeholder="Quais?" class="input-detail">
+                        </toggle-question>
 
-                    <!-- 2. HISTÓRIA ATUAL (H.A) -->
-                    <section class="space-y-4">
-                        <h3 class="flex items-center gap-2 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 p-2 rounded-lg">
-                            <i class="ph ph-heartbeat text-lg"></i> História Atual (H.A.)
-                        </h3>
+                        <toggle-question v-model="form.ha_alergia_medicamento" label="Alergia a remédios?">
+                            <input v-model="form.ha_alergia_medicamento_qual" placeholder="Qual?" class="input-detail">
+                        </toggle-question>
 
-                        <!-- Medicamentos -->
-                        <div class="question-block">
-                            <toggle-question v-model="form.ha_medicamentos_uso" label="Faz uso de medicamentos?"></toggle-question>
-                            <input v-if="form.ha_medicamentos_uso" v-model="form.ha_medicamentos_qual" placeholder="Quais medicamentos?" class="input-detail">
-                        </div>
+                        <toggle-question v-model="form.ha_alergia_outros_bool" label="Alergia a químicos/cosméticos?">
+                            <input v-model="form.ha_alergia_outros" placeholder="Especifique..." class="input-detail">
+                        </toggle-question>
 
-                        <!-- Exames -->
-                        <div class="question-block">
-                            <toggle-question v-model="form.ha_exames_periodicos" label="Faz exame periodicamente?"></toggle-question>
-                            <div v-if="form.ha_exames_periodicos" class="space-y-2 mt-2">
-                                <input v-model="form.ha_exames_qual" placeholder="Quais exames?" class="input-detail">
-                                <input v-model="form.ha_exames_ultima_vez" placeholder="Última vez?" class="input-detail">
-                            </div>
-                        </div>
+                        <toggle-question v-model="form.ha_exames_periodicos" label="Faz exames periódicos?">
+                            <input v-model="form.ha_exames_qual" placeholder="Quais e última vez?" class="input-detail">
+                        </toggle-question>
 
-                        <!-- Alergias -->
-                        <div class="question-block">
-                            <toggle-question v-model="form.ha_alergia_medicamento" label="Alergia a medicamento?"></toggle-question>
-                            <input v-if="form.ha_alergia_medicamento" v-model="form.ha_alergia_medicamento_qual" placeholder="Qual medicamento?" class="input-detail">
-                        </div>
-                        <input v-model="form.ha_alergia_outros" placeholder="Alergia a químico ou corrente elétrica?" class="input-field">
+                        <!-- Ginecologia -->
+                        <div class="bg-rose-50/30 p-3 rounded-2xl border border-rose-100 space-y-3">
+                            <p class="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Saúde Feminina</p>
+                            
+                            <toggle-question v-model="form.ha_anticoncepcional" label="Usa anticoncepcional?">
+                                <input v-model="form.ha_anticoncepcional_qual" placeholder="Qual?" class="input-detail">
+                            </toggle-question>
 
-                        <!-- Ciclo Menstrual -->
-                        <div class="question-block">
-                            <label class="text-xs font-bold text-gray-600">Ciclo Menstrual Normal?</label>
-                            <div class="flex gap-3 mt-1">
-                                <label class="flex items-center gap-2"><input type="radio" v-model="form.ha_ciclo_normal" :value="true" class="accent-rose-500"> Sim</label>
-                                <label class="flex items-center gap-2"><input type="radio" v-model="form.ha_ciclo_normal" :value="false" class="accent-rose-500"> Não</label>
-                            </div>
-                            <input v-if="form.ha_ciclo_normal === false" v-model="form.ha_ciclo_obs" placeholder="Como é o ciclo?" class="input-detail">
-                        </div>
-
-                        <div class="question-block">
-                            <toggle-question v-model="form.ha_anticoncepcional" label="Usa anticoncepcional?"></toggle-question>
-                            <input v-if="form.ha_anticoncepcional" v-model="form.ha_anticoncepcional_qual" placeholder="Qual?" class="input-detail">
-                        </div>
-
-                        <!-- TPM -->
-                        <div>
-                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-2">Síndrome Pré-Menstrual (TPM)</label>
-                            <div class="flex flex-wrap gap-2 mt-1">
-                                <label v-for="sintoma in ['Edema', 'Ansiedade', 'Irritação', 'Doces', 'N.D.A.']" :key="sintoma" class="cursor-pointer custom-checkbox">
-                                    <input type="checkbox" :value="sintoma" v-model="form.ha_tpm_sintomas" class="hidden">
-                                    <div class="px-3 py-1 border border-gray-200 rounded-lg text-xs text-gray-600 transition">{{ sintoma }}</div>
-                                </label>
+                            <div class="question-card">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-gray-700">Ciclo Menstrual Normal?</span>
+                                    <div class="flex gap-2">
+                                        <label class="flex items-center gap-1 text-xs cursor-pointer"><input type="radio" v-model="form.ha_ciclo_normal" :value="true" class="accent-rose-500"> Sim</label>
+                                        <label class="flex items-center gap-1 text-xs cursor-pointer"><input type="radio" v-model="form.ha_ciclo_normal" :value="false" class="accent-rose-500"> Não</label>
+                                    </div>
+                                </div>
+                                <input v-if="form.ha_ciclo_normal === false" v-model="form.ha_ciclo_obs" placeholder="Descreva a irregularidade..." class="input-detail">
                             </div>
                         </div>
 
-                        <!-- Condições Gerais -->
-                        <div class="grid grid-cols-2 gap-3">
+                        <!-- Grade de Condições -->
+                        <div class="grid grid-cols-2 gap-3 mt-4">
                             <toggle-card v-model="form.ha_hipertensao" label="Hipertensão" icon="ph-heart-break"></toggle-card>
                             <toggle-card v-model="form.ha_marcapasso" label="Marcapasso" icon="ph-lightning"></toggle-card>
-                            <toggle-card v-model="form.ha_caibra" label="Cãibra" icon="ph-lightning-slash"></toggle-card>
                             <toggle-card v-model="form.ha_hernia" label="Hérnia" icon="ph-first-aid"></toggle-card>
+                            <toggle-card v-model="form.ha_protese" label="Prótese/Pino" icon="ph-screw"></toggle-card>
                         </div>
-
-                        <!-- Varizes / Próteses -->
-                        <div class="question-block">
-                            <toggle-question v-model="form.ha_varizes" label="Varizes ou Teleangectasias?"></toggle-question>
-                            <input v-if="form.ha_varizes" v-model="form.ha_varizes_local" placeholder="Local?" class="input-detail">
-                        </div>
-                        <div class="question-block">
-                            <toggle-question v-model="form.ha_protese" label="Placa, pino ou prótese?"></toggle-question>
-                            <input v-if="form.ha_protese" v-model="form.ha_protese_local" placeholder="Local?" class="input-detail">
-                        </div>
-                        <div class="question-block">
-                            <toggle-question v-model="form.ha_cancer" label="Histórico de Câncer?"></toggle-question>
-                            <input v-if="form.ha_cancer" v-model="form.ha_cancer_obs" placeholder="Observações?" class="input-detail">
-                        </div>
-
-                        <input v-model="form.ha_outras_doencas" placeholder="Outras doenças?" class="input-field">
-                        <input v-model="form.ha_intestino" placeholder="Funcionamento do Intestino" class="input-field">
-                    </section>
-
-                    <!-- 3. HISTÓRIA SOCIAL (H.S.) -->
-                    <section class="space-y-4">
-                        <h3 class="flex items-center gap-2 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 p-2 rounded-lg">
-                            <i class="ph ph-coffee text-lg"></i> História Social (H.S.)
-                        </h3>
-
-                        <input v-model="form.hs_vestuario" placeholder="Tipo de Vestuário (ex: Jeans, Legging)" class="input-field">
-                        <input v-model="form.hs_sono" placeholder="Horas de Sono" class="input-field">
-
-                        <div class="question-block">
-                            <toggle-question v-model="form.hs_atividade_fisica" label="Atividade Física?"></toggle-question>
-                            <div v-if="form.hs_atividade_fisica" class="grid grid-cols-2 gap-2 mt-2">
-                                <input v-model="form.hs_atividade_qual" placeholder="Qual?" class="input-detail">
-                                <input v-model="form.hs_atividade_freq" placeholder="Freq?" class="input-detail">
-                            </div>
-                        </div>
-
-                        <!-- Alimentação -->
-                        <div>
-                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-2">Alimentação</label>
-                            <div class="flex flex-wrap gap-2 mt-1">
-                                <label v-for="alim in ['Verdura/Legumes', 'Frituras', 'Massas', 'Frutas', 'Doces']" :key="alim" class="cursor-pointer custom-checkbox">
-                                    <input type="checkbox" :value="alim" v-model="form.hs_alimentacao" class="hidden">
-                                    <div class="px-3 py-1 border border-gray-200 rounded-lg text-xs text-gray-600 transition">{{ alim }}</div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-2">Come mais em qual horário?</label>
-                            <div class="flex gap-2 mt-1">
-                                <label v-for="turno in ['Manhã', 'Tarde', 'Noite']" :key="turno" class="flex-1 cursor-pointer custom-checkbox">
-                                    <input type="radio" :value="turno" v-model="form.hs_horario_comer" class="hidden">
-                                    <div :class="form.hs_horario_comer === turno ? 'bg-rose-400 text-white' : 'bg-white border-gray-200 text-gray-500'" class="border rounded-lg py-2 text-center text-xs font-bold transition">{{ turno }}</div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="question-block">
-                            <toggle-question v-model="form.hs_dieta" label="Faz dieta?"></toggle-question>
-                            <input v-if="form.hs_dieta" v-model="form.hs_dieta_como" placeholder="Como é a dieta?" class="input-detail">
-                        </div>
-
-                        <div class="question-block">
-                            <toggle-question v-model="form.hs_liquido" label="Ingere bastante líquido?"></toggle-question>
-                            <input v-if="form.hs_liquido" v-model="form.hs_liquido_qtd" placeholder="Quantidade?" class="input-detail">
-                        </div>
-
-                        <!-- Sol e Vícios -->
-                        <div class="grid grid-cols-2 gap-3">
-                            <toggle-card v-model="form.hs_fuma" label="Fuma?" icon="ph-cigarette"></toggle-card>
-                            <toggle-card v-model="form.hs_alcool" label="Álcool?" icon="ph-beer-bottle"></toggle-card>
-                        </div>
-                        <input v-if="form.hs_alcool" v-model="form.hs_alcool_freq" placeholder="Frequência álcool?" class="input-detail mt-2">
-
-                        <div class="question-block">
-                            <toggle-question v-model="form.hs_sol" label="Costuma pegar sol?"></toggle-question>
-                            <input v-if="form.hs_sol" v-model="form.hs_sol_freq" placeholder="Tempo e hora?" class="input-detail">
-                        </div>
-                        <div class="question-block">
-                            <toggle-question v-model="form.hs_protetor" label="Usa protetor solar?"></toggle-question>
-                            <input v-if="form.hs_protetor" v-model="form.hs_protetor_freq" placeholder="Frequência?" class="input-detail">
-                        </div>
-                    </section>
-
-                    <!-- 4. HISTÓRICO ESTÉTICO E GESTACIONAL -->
-                    <section class="space-y-4">
-                        <h3 class="flex items-center gap-2 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 p-2 rounded-lg">
-                            <i class="ph ph-face-mask text-lg"></i> Estética & Gestacional
-                        </h3>
-
-                        <input v-model="form.hs_proc_estetico" placeholder="Já fez algum procedimento estético?" class="input-field">
                         
-                        <div class="question-block">
-                            <toggle-question v-model="form.hs_cirurgia" label="Já fez cirurgia plástica?"></toggle-question>
-                            <input v-if="form.hs_cirurgia" v-model="form.hs_cirurgia_qual" placeholder="Qual?" class="input-detail">
-                        </div>
+                        <input v-if="form.ha_protese" v-model="form.ha_protese_local" placeholder="Local da prótese?" class="input-detail">
 
+                        <toggle-question v-model="form.ha_cancer" label="Histórico de Câncer?">
+                            <input v-model="form.ha_cancer_obs" placeholder="Detalhes..." class="input-detail">
+                        </toggle-question>
+                    </div>
+
+                    <!-- SEÇÃO 3: HISTÓRIA SOCIAL (H.S.) -->
+                    <div class="section-title"><i class="ph ph-sun text-lg"></i> Hábitos e Rotina</div>
+                    <div class="space-y-3">
                         <div class="grid grid-cols-2 gap-3">
-                            <input v-model="form.hs_gestante_qtd" placeholder="Gestações (Qtd)" class="input-field">
-                            <input v-model="form.hs_aborto_qtd" placeholder="Abortos (Qtd)" class="input-field">
+                            <toggle-card v-model="form.hs_fuma" label="Tabagismo" icon="ph-cigarette"></toggle-card>
+                            <toggle-card v-model="form.hs_alcool" label="Álcool" icon="ph-beer-bottle"></toggle-card>
                         </div>
-                        <input v-model="form.hs_tipo_parto" placeholder="Tipo(s) de Parto" class="input-field">
 
-                        <div class="pt-4">
-                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-2">Observações Finais</label>
-                            <textarea v-model="form.obs_final" rows="3" placeholder="Algo que não perguntei?" class="w-full p-4 bg-gray-50 rounded-2xl border-none focus:bg-white focus:ring-2 focus:ring-rose-200 outline-none text-sm"></textarea>
+                        <toggle-question v-model="form.hs_sol" label="Exposição Solar Frequente?">
+                            <input v-model="form.hs_sol_freq" placeholder="Horários e frequência?" class="input-detail">
+                        </toggle-question>
+
+                        <toggle-question v-model="form.hs_protetor" label="Usa Protetor Solar?">
+                            <input v-model="form.hs_protetor_freq" placeholder="Frequência de uso?" class="input-detail">
+                        </toggle-question>
+
+                        <toggle-question v-model="form.hs_atividade_fisica" label="Atividade Física?">
+                            <input v-model="form.hs_atividade_qual" placeholder="Qual e frequência?" class="input-detail">
+                        </toggle-question>
+
+                        <div class="space-y-2 pt-2">
+                            <label class="ml-3 text-[10px] font-bold text-gray-400 uppercase">Qualidade do Sono</label>
+                            <input v-model="form.hs_sono" placeholder="Horas por noite / Qualidade" class="input-std">
                         </div>
-                    </section>
+                        
+                        <div class="space-y-2">
+                            <label class="ml-3 text-[10px] font-bold text-gray-400 uppercase">Ingestão de Líquidos</label>
+                            <input v-model="form.hs_liquido_qtd" placeholder="Quantidade diária (aprox)" class="input-std">
+                        </div>
+                    </div>
+
+                    <!-- SEÇÃO 4: ESTÉTICA -->
+                    <div class="section-title"><i class="ph ph-face-mask text-lg"></i> Histórico Estético</div>
+                    <div class="space-y-3">
+                        <textarea v-model="form.hs_proc_estetico" rows="3" placeholder="Já realizou procedimentos estéticos anteriores? Quais?" class="input-std"></textarea>
+                        
+                        <toggle-question v-model="form.hs_cirurgia" label="Cirurgia Plástica?">
+                            <input v-model="form.hs_cirurgia_qual" placeholder="Qual e quando?" class="input-detail">
+                        </toggle-question>
+
+                        <div class="bg-gray-50 p-4 rounded-2xl mt-4">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Observações Finais</label>
+                            <textarea v-model="form.obs_final" rows="4" placeholder="Informações adicionais importantes..." class="w-full bg-transparent border-none focus:ring-0 text-sm mt-1 p-0 placeholder-gray-400"></textarea>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- FAB Save -->
+                <!-- Botão Flutuante de Salvar -->
                 <div class="fixed bottom-0 left-0 right-0 p-6 pt-10 bg-gradient-to-t from-white via-white to-transparent z-40 flex justify-center">
-                    <button @click="save" class="w-full max-w-sm bg-rose-900 text-white py-4 rounded-2xl shadow-xl font-bold flex items-center justify-center gap-3 active:scale-95 transition hover:bg-rose-800 text-lg">
-                        <i class="ph ph-floppy-disk text-2xl"></i> Salvar Ficha
+                    <button @click="save" class="w-full max-w-sm bg-rose-900 text-white py-4 rounded-2xl shadow-xl shadow-rose-900/30 font-bold flex items-center justify-center gap-3 active:scale-95 transition hover:bg-rose-800 text-lg">
+                        <i class="ph ph-floppy-disk text-2xl"></i> {{ editingId ? 'Salvar Alterações' : 'Criar Ficha' }}
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- COMPONENTES VUE -->
+    <!-- TEMPLATES DOS COMPONENTES (Reusable) -->
+    
+    <!-- Template: Pergunta com Toggle + Slot para detalhes -->
     <script type="text/x-template" id="toggle-question-tpl">
-        <label class="flex items-center justify-between cursor-pointer group">
-            <span class="text-sm font-medium text-gray-700 group-hover:text-rose-900 transition">{{ label }}</span>
-            <div class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" :checked="modelValue" @change="$emit('update:modelValue', $event.target.checked)" class="sr-only peer">
-                <div class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-500"></div>
+        <div class="question-card">
+            <label class="flex items-center justify-between cursor-pointer group">
+                <span class="text-sm font-medium text-gray-700 group-hover:text-rose-900 transition">{{ label }}</span>
+                <div class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" :checked="modelValue" @change="$emit('update:modelValue', $event.target.checked)" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500"></div>
+                </div>
+            </label>
+            <div v-if="modelValue">
+                <slot></slot>
             </div>
-        </label>
+        </div>
     </script>
 
+    <!-- Template: Card Quadrado com Ícone -->
     <script type="text/x-template" id="toggle-card-tpl">
-        <label class="flex flex-col items-center justify-center p-3 border rounded-2xl cursor-pointer transition relative overflow-hidden" 
-            :class="modelValue ? 'bg-rose-50 border-rose-200 text-rose-900' : 'bg-white border-gray-100 text-gray-500'">
+        <label class="flex flex-col items-center justify-center p-4 border rounded-2xl cursor-pointer transition relative overflow-hidden h-24" 
+            :class="modelValue ? 'bg-rose-50 border-rose-200 text-rose-900 ring-1 ring-rose-200' : 'bg-white border-gray-100 text-gray-500'">
             <i :class="['ph', icon, 'text-2xl mb-1']"></i>
-            <span class="text-xs font-bold">{{ label }}</span>
+            <span class="text-xs font-bold text-center">{{ label }}</span>
             <input type="checkbox" :checked="modelValue" @change="$emit('update:modelValue', $event.target.checked)" class="hidden">
-            <div v-if="modelValue" class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full"></div>
+            <div v-if="modelValue" class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full animate-fade-in"></div>
         </label>
     </script>
 
-    <style>
-        .input-field { @apply w-full p-3 bg-gray-50 rounded-xl border-none focus:bg-white focus:ring-2 focus:ring-rose-200 outline-none text-sm transition font-medium placeholder-gray-400; }
-        .input-detail { @apply w-full p-2 bg-rose-50/50 rounded-lg border-b border-rose-200 focus:bg-white outline-none text-xs text-rose-900 placeholder-rose-300 mt-1 animate-fade-in; }
-        .question-block { @apply p-3 bg-white border border-gray-50 rounded-xl shadow-sm; }
-    </style>
-
-    <!-- LOGIC -->
+    <!-- LÓGICA VUE.JS + FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- SUAS CHAVES AQUI ---
+        // -----------------------------------------------------------
+        // CONFIGURAÇÃO DO FIREBASE (COLE SUAS CHAVES AQUI)
+        // -----------------------------------------------------------
         const firebaseConfig = {
             apiKey: "AIzaSyBT9OUbgtGQWK51ixifL1lxNxbxvH5XTTs",
             authDomain: "easy-anamnese-prd.firebaseapp.com",
@@ -424,7 +389,7 @@
         const db = getFirestore(app);
         const { createApp, ref, computed } = Vue;
 
-        // Components
+        // --- COMPONENTES ---
         const ToggleQuestion = {
             props: ['modelValue', 'label'],
             emits: ['update:modelValue'],
@@ -443,52 +408,46 @@
                 const user = ref(null);
                 const loading = ref(true);
                 const view = ref('list');
+                const editingId = ref(null);
                 const email = ref('');
                 const password = ref('');
                 const errorMsg = ref('');
                 const searchTerm = ref('');
                 const clients = ref([]);
                 
-                // Form State Inicial (Vazio)
+                // --- STATE DO FORMULÁRIO (Completo) ---
                 const emptyForm = {
                     nome: '', sexo: '', nascimento: '', idade: '', profissao: '', 
-                    endereco: '', numero: '', email: '', celular: '', telefone: '', como_conheceu: [],
+                    endereco: '', email: '', celular: '', telefone: '',
                     
-                    // HA
+                    // HA (História Atual)
                     ha_medicamentos_uso: false, ha_medicamentos_qual: '',
-                    ha_exames_periodicos: false, ha_exames_qual: '', ha_exames_ultima_vez: '',
-                    ha_alergia_medicamento: false, ha_alergia_medicamento_qual: '', ha_alergia_outros: '',
-                    ha_intestino: '',
-                    ha_ciclo_normal: null, ha_ciclo_obs: '',
+                    ha_alergia_medicamento: false, ha_alergia_medicamento_qual: '',
+                    ha_alergia_outros_bool: false, ha_alergia_outros: '',
+                    ha_exames_periodicos: false, ha_exames_qual: '',
                     ha_anticoncepcional: false, ha_anticoncepcional_qual: '',
-                    ha_tpm_sintomas: [],
-                    ha_hipertensao: false, ha_marcapasso: false, ha_caibra: false, 
-                    ha_varizes: false, ha_varizes_local: '',
+                    ha_ciclo_normal: null, ha_ciclo_obs: '',
+                    ha_hipertensao: false, ha_marcapasso: false, ha_hernia: false,
                     ha_protese: false, ha_protese_local: '',
-                    ha_hernia: false,
                     ha_cancer: false, ha_cancer_obs: '',
-                    ha_outras_doencas: '',
 
-                    // HS
-                    hs_vestuario: '', hs_sono: '',
-                    hs_atividade_fisica: false, hs_atividade_qual: '', hs_atividade_freq: '',
-                    hs_alimentacao: [], hs_horario_comer: '',
-                    hs_dieta: false, hs_dieta_como: '',
-                    hs_liquido: false, hs_liquido_qtd: '',
+                    // HS (História Social)
+                    hs_fuma: false, hs_alcool: false,
                     hs_sol: false, hs_sol_freq: '',
                     hs_protetor: false, hs_protetor_freq: '',
-                    hs_alcool: false, hs_alcool_freq: '',
-                    hs_fuma: false,
-                    
-                    // Estetica
+                    hs_atividade_fisica: false, hs_atividade_qual: '',
+                    hs_sono: '', hs_liquido_qtd: '',
+                    hs_gestante_qtd: '', // Usado na lista como flag de mãe
+
+                    // Estética
                     hs_proc_estetico: '',
                     hs_cirurgia: false, hs_cirurgia_qual: '',
-                    hs_gestante_qtd: '', hs_aborto_qtd: '', hs_tipo_parto: '',
                     obs_final: ''
                 };
 
                 const form = ref({ ...emptyForm });
 
+                // --- COMPUTEDS ---
                 const userDisplayName = computed(() => user.value?.email ? user.value.email.split('@')[0] : 'Profissional');
                 
                 const filteredClients = computed(() => {
@@ -499,11 +458,16 @@
 
                 const formatDate = (ts) => ts ? new Date(ts.seconds * 1000).toLocaleDateString('pt-BR') : 'Hoje';
 
+                // --- AUTH & DATA LISTENER (SAAS Logic) ---
                 onAuthStateChanged(auth, (u) => {
                     user.value = u;
                     loading.value = false;
                     if (u) {
-                        const q = query(collection(db, "anamneses"), where("usuario_id", "==", u.uid));
+                        // MODELO SAAS: Busca na subcoleção específica do usuário logado
+                        // Caminho: users/{uid}/anamneses
+                        const userAnamnesesRef = collection(db, "users", u.uid, "anamneses");
+                        const q = query(userAnamnesesRef);
+                        
                         onSnapshot(q, (snapshot) => {
                             clients.value = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
                                 .sort((a, b) => (b.data?.seconds || 0) - (a.data?.seconds || 0));
@@ -511,37 +475,78 @@
                     } else clients.value = [];
                 });
 
+                // --- ACTIONS ---
                 const loginEmail = async () => {
                     loading.value = true; errorMsg.value = '';
                     try { await signInWithEmailAndPassword(auth, email.value, password.value); }
-                    catch (e) { errorMsg.value = "Dados incorretos."; loading.value = false; }
+                    catch (e) { errorMsg.value = "E-mail ou senha inválidos."; loading.value = false; }
                 };
 
                 const logout = () => { signOut(auth); email.value = ''; password.value = ''; };
 
                 const createNew = () => {
-                    form.value = JSON.parse(JSON.stringify(emptyForm)); // Deep Clone reset
+                    editingId.value = null; // Garante que estamos criando
+                    form.value = JSON.parse(JSON.stringify(emptyForm));
                     view.value = 'form';
                 };
 
-                const save = async () => {
-                    if (!form.value.nome) return alert("Preencha o nome!");
-                    loading.value = true;
-                    
-                    const dataToSave = {
-                        ...form.value,
-                        usuario_id: user.value.uid,
-                        data: serverTimestamp()
-                    };
+                const openClient = (client) => {
+                    editingId.value = client.id;
+                    // Merge seguro para não dar erro com campos novos
+                    form.value = { ...emptyForm, ...client };
+                    view.value = 'form';
+                };
 
+                const deleteClient = async () => {
+                    if(!editingId.value) return;
+                    if(!confirm("Tem certeza que deseja EXCLUIR permanentemente esta ficha?")) return;
+                    
+                    loading.value = true;
                     try {
-                        await addDoc(collection(db, "anamneses"), dataToSave);
+                        await deleteDoc(doc(db, "users", user.value.uid, "anamneses", editingId.value));
                         view.value = 'list';
-                    } catch (e) { alert("Erro ao salvar."); }
+                    } catch (e) { alert("Erro ao excluir: " + e.message); }
                     finally { loading.value = false; }
                 };
 
-                return { user, loading, view, email, password, errorMsg, searchTerm, filteredClients, form, loginEmail, logout, createNew, save, formatDate, userDisplayName };
+                const save = async () => {
+                    if (!form.value.nome) return alert("Por favor, preencha o Nome Completo.");
+                    
+                    const msg = editingId.value ? "Salvar alterações na ficha?" : "Criar nova ficha?";
+                    if (!confirm(msg)) return;
+
+                    loading.value = true;
+                    
+                    // Prepara dados
+                    const dataToSave = { ...form.value };
+                    
+                    if(!editingId.value) {
+                         dataToSave.data = serverTimestamp(); // Data criação
+                    }
+
+                    try {
+                        const colRef = collection(db, "users", user.value.uid, "anamneses");
+                        
+                        if (editingId.value) {
+                            await updateDoc(doc(colRef, editingId.value), dataToSave);
+                        } else {
+                            await addDoc(colRef, dataToSave);
+                        }
+                        view.value = 'list';
+                    } catch (e) { 
+                        alert("Erro ao salvar: " + e.message); 
+                    } finally { 
+                        loading.value = false; 
+                    }
+                };
+
+                return { 
+                    user, loading, view, editingId, 
+                    email, password, errorMsg, 
+                    searchTerm, filteredClients, form, 
+                    loginEmail, logout, createNew, openClient, deleteClient, save, 
+                    formatDate, userDisplayName 
+                };
             }
         }).mount('#app');
     </script>
