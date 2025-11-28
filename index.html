@@ -52,18 +52,25 @@
         /* Checkboxes refinados */
         .custom-checkbox input:checked + div { background-color: #E9967A; border-color: #E9967A; color: white; box-shadow: 0 4px 12px rgba(233, 150, 122, 0.4); }
         
-        /* Input Base Style */
-        .input-field { @apply w-full px-4 py-3.5 bg-gray-50 rounded-2xl border border-transparent focus:bg-white focus:border-rose-200 focus:ring-4 focus:ring-rose-100 outline-none text-sm text-gray-700 transition-all font-medium placeholder-gray-400; }
+        /* Input Base Style - Agora com estilo mais sólido para destacar a área clicável */
+        .input-field { 
+            @apply w-full px-4 py-4 bg-white rounded-2xl border border-gray-200 
+            focus:border-rose-300 focus:ring-4 focus:ring-rose-100 outline-none 
+            text-sm text-gray-700 transition-all font-medium placeholder-gray-400 shadow-sm; 
+        }
         
         /* Input Detail (Conditional) */
-        .input-detail { @apply w-full px-4 py-3 bg-rose-50/60 rounded-xl border border-rose-100 focus:bg-white focus:border-rose-300 outline-none text-sm text-rose-900 placeholder-rose-400 mt-2 animate-fade-in; }
+        .input-detail { 
+            @apply w-full px-4 py-3 bg-rose-50 rounded-xl border border-rose-100 
+            focus:bg-white focus:border-rose-300 outline-none text-sm text-rose-900 
+            placeholder-rose-400 mt-2 animate-fade-in; 
+        }
         
         /* Blocos de Pergunta */
-        .question-block { @apply p-4 bg-white border border-gray-100 rounded-2xl shadow-sm transition-shadow hover:shadow-md; }
-
-        /* PADRÃO GLOBAL DE INPUTS */
-        .input-group { @apply flex flex-col gap-2 w-full; }
-        .label-text { @apply text-xs font-bold text-gray-400 uppercase tracking-wider ml-1; }
+        .question-block { @apply p-4 bg-white border border-gray-100 rounded-2xl shadow-sm mb-2; }
+        
+        /* Título de seção pequeno para Radio Buttons */
+        .group-label { @apply text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1 mb-1 block; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-rose-50 via-white to-rose-100 text-gray-700 h-screen w-screen overflow-hidden antialiased selection:bg-rose-200">
@@ -166,80 +173,53 @@
                     </div>
                 </div>
 
-                <div class="p-6 space-y-8">
+                <div class="p-6 space-y-6">
                     
-                    <section class="space-y-5">
-                        <h3 class="flex items-center gap-3 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 px-4 py-3 rounded-xl border border-rose-100">
+                    <section class="space-y-4">
+                        <h3 class="flex items-center gap-3 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 px-4 py-3 rounded-xl border border-rose-100 mb-4">
                             <i class="ph ph-user text-lg"></i> Dados Pessoais
                         </h3>
                         
-                        <div class="input-group">
-                            <span class="label-text">Nome Completo</span>
-                            <input v-model="form.nome" class="input-field">
-                        </div>
+                        <input v-model="form.nome" placeholder="Nome Completo" class="input-field">
                         
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="input-group">
-                                <span class="label-text">Sexo</span>
+                            <div>
+                                <span class="group-label">Sexo</span>
                                 <div class="flex gap-2">
                                     <label class="flex-1 cursor-pointer custom-checkbox">
                                         <input type="radio" v-model="form.sexo" value="F" class="hidden">
-                                        <div :class="form.sexo === 'F' ? 'bg-rose-400 text-white border-rose-400' : 'bg-white text-gray-500 border-gray-200'" class="border rounded-xl py-3.5 text-center text-sm font-bold transition">Feminino</div>
+                                        <div :class="form.sexo === 'F' ? 'bg-rose-400 text-white border-rose-400' : 'bg-white text-gray-500 border-gray-200'" class="border rounded-xl py-3.5 text-center text-sm font-bold transition">Fem</div>
                                     </label>
                                     <label class="flex-1 cursor-pointer custom-checkbox">
                                         <input type="radio" v-model="form.sexo" value="M" class="hidden">
-                                        <div :class="form.sexo === 'M' ? 'bg-blue-400 text-white border-blue-400' : 'bg-white text-gray-500 border-gray-200'" class="border rounded-xl py-3.5 text-center text-sm font-bold transition">Masculino</div>
+                                        <div :class="form.sexo === 'M' ? 'bg-blue-400 text-white border-blue-400' : 'bg-white text-gray-500 border-gray-200'" class="border rounded-xl py-3.5 text-center text-sm font-bold transition">Masc</div>
                                     </label>
                                 </div>
                             </div>
-                            <div class="input-group">
-                                <span class="label-text">Nascimento</span>
-                                <input v-model="form.nascimento" type="date" class="input-field h-[52px]">
-                            </div>
+                            <input v-model="form.nascimento" placeholder="Data Nascimento" class="input-field" onfocus="(this.type='date')" onblur="(this.type='text')">
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="input-group">
-                                <span class="label-text">Idade</span>
-                                <input v-model="form.idade" type="number" class="input-field">
-                            </div>
-                            <div class="input-group">
-                                <span class="label-text">Profissão</span>
-                                <input v-model="form.profissao" class="input-field">
-                            </div>
+                            <input v-model="form.idade" type="number" placeholder="Idade" class="input-field">
+                            <input v-model="form.profissao" placeholder="Profissão" class="input-field">
                         </div>
 
                         <div class="space-y-4">
-                            <div class="input-group">
-                                <span class="label-text">Endereço</span>
-                                <input v-model="form.endereco" class="input-field">
-                            </div>
+                            <input v-model="form.endereco" placeholder="Endereço" class="input-field">
                             <div class="flex gap-3">
-                                <div class="w-28 input-group">
-                                    <span class="label-text">Número</span>
-                                    <input v-model="form.numero" class="input-field">
-                                </div>
-                                <div class="flex-1 input-group">
-                                    <span class="label-text">E-mail</span>
-                                    <input v-model="form.email" type="email" class="input-field">
-                                </div>
+                                <input v-model="form.numero" placeholder="Nº" class="input-field w-24">
+                                <input v-model="form.email" type="email" placeholder="E-mail" class="input-field flex-1">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="input-group">
-                                <span class="label-text">Celular / Whats</span>
-                                <input v-model="form.celular" type="tel" class="input-field" id="cel">
-                            </div>
-                            <div class="input-group">
-                                <span class="label-text">Telefone Fixo</span>
-                                <input v-model="form.telefone" type="tel" class="input-field">
-                            </div>
+                            <input v-model="form.celular" type="tel" placeholder="Celular / WhatsApp" class="input-field" id="cel">
+                            <input v-model="form.telefone" type="tel" placeholder="Telefone Fixo" class="input-field">
                         </div>
 
-                        <div class="input-group">
-                            <span class="label-text">Como nos conheceu?</span>
-                            <div class="flex flex-wrap gap-2 mt-1">
+                        <div>
+                            <span class="group-label">Como nos conheceu?</span>
+                            <div class="flex flex-wrap gap-2">
                                 <label v-for="opt in ['Internet', 'Indicação', 'Publicidade', 'Outros']" :key="opt" class="cursor-pointer custom-checkbox">
                                     <input type="checkbox" :value="opt" v-model="form.como_conheceu" class="hidden">
                                     <div class="px-4 py-2 border border-gray-200 rounded-xl text-xs font-bold text-gray-500 transition hover:bg-gray-50">{{ opt }}</div>
@@ -249,43 +229,32 @@
                     </section>
 
                     <section class="space-y-4">
-                        <h3 class="flex items-center gap-3 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 px-4 py-3 rounded-xl border border-rose-100">
+                        <h3 class="flex items-center gap-3 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 px-4 py-3 rounded-xl border border-rose-100 mb-4">
                             <i class="ph ph-heartbeat text-lg"></i> História Atual (H.A.)
                         </h3>
 
                         <div class="question-block">
                             <toggle-question v-model="form.ha_medicamentos_uso" label="Faz uso de medicamentos?"></toggle-question>
-                            <div class="input-group mt-2" v-if="form.ha_medicamentos_uso">
-                                <input v-model="form.ha_medicamentos_qual" placeholder="Quais medicamentos?" class="input-detail">
-                            </div>
+                            <input v-if="form.ha_medicamentos_uso" v-model="form.ha_medicamentos_qual" placeholder="Quais medicamentos?" class="input-detail">
                         </div>
 
                         <div class="question-block">
                             <toggle-question v-model="form.ha_exames_periodicos" label="Faz exame periodicamente?"></toggle-question>
                             <div v-if="form.ha_exames_periodicos" class="space-y-3 mt-3">
-                                <div class="input-group">
-                                    <input v-model="form.ha_exames_qual" placeholder="Quais exames?" class="input-detail">
-                                </div>
-                                <div class="input-group">
-                                    <input v-model="form.ha_exames_ultima_vez" placeholder="Quando foi a última vez?" class="input-detail">
-                                </div>
+                                <input v-model="form.ha_exames_qual" placeholder="Quais exames?" class="input-detail">
+                                <input v-model="form.ha_exames_ultima_vez" placeholder="Quando foi a última vez?" class="input-detail">
                             </div>
                         </div>
 
                         <div class="question-block">
                             <toggle-question v-model="form.ha_alergia_medicamento" label="Alergia a medicamento?"></toggle-question>
-                            <div class="input-group mt-2" v-if="form.ha_alergia_medicamento">
-                                <input v-model="form.ha_alergia_medicamento_qual" placeholder="Qual medicamento?" class="input-detail">
-                            </div>
+                            <input v-if="form.ha_alergia_medicamento" v-model="form.ha_alergia_medicamento_qual" placeholder="Qual medicamento?" class="input-detail">
                         </div>
                         
-                        <div class="input-group">
-                            <span class="label-text">Outras Alergias</span>
-                            <input v-model="form.ha_alergia_outros" placeholder="Químicos, corrente elétrica..." class="input-field">
-                        </div>
+                        <input v-model="form.ha_alergia_outros" placeholder="Outras Alergias (Químicos, etc)" class="input-field">
 
                         <div class="question-block">
-                            <label class="text-sm font-bold text-gray-700 block mb-3">Ciclo Menstrual Normal?</label>
+                            <span class="text-sm font-bold text-gray-700 block mb-3">Ciclo Menstrual Normal?</span>
                             <div class="flex gap-4">
                                 <label class="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2 rounded-lg border border-transparent hover:bg-rose-50 hover:border-rose-100 transition">
                                     <input type="radio" v-model="form.ha_ciclo_normal" :value="true" class="accent-rose-500 w-4 h-4"> <span class="text-sm font-medium">Sim</span>
@@ -294,21 +263,17 @@
                                     <input type="radio" v-model="form.ha_ciclo_normal" :value="false" class="accent-rose-500 w-4 h-4"> <span class="text-sm font-medium">Não</span>
                                 </label>
                             </div>
-                            <div class="input-group mt-2" v-if="form.ha_ciclo_normal === false">
-                                <input v-model="form.ha_ciclo_obs" placeholder="Descreva como é o ciclo..." class="input-detail">
-                            </div>
+                            <input v-if="form.ha_ciclo_normal === false" v-model="form.ha_ciclo_obs" placeholder="Descreva como é o ciclo..." class="input-detail">
                         </div>
 
                         <div class="question-block">
                             <toggle-question v-model="form.ha_anticoncepcional" label="Usa anticoncepcional?"></toggle-question>
-                            <div class="input-group mt-2" v-if="form.ha_anticoncepcional">
-                                <input v-model="form.ha_anticoncepcional_qual" placeholder="Qual marca/tipo?" class="input-detail">
-                            </div>
+                            <input v-if="form.ha_anticoncepcional" v-model="form.ha_anticoncepcional_qual" placeholder="Qual marca/tipo?" class="input-detail">
                         </div>
 
-                        <div class="input-group">
-                            <span class="label-text">Sintomas de TPM</span>
-                            <div class="flex flex-wrap gap-2 mt-1">
+                        <div>
+                            <span class="group-label">Sintomas de TPM</span>
+                            <div class="flex flex-wrap gap-2">
                                 <label v-for="sintoma in ['Edema', 'Ansiedade', 'Irritação', 'Doces', 'N.D.A.']" :key="sintoma" class="cursor-pointer custom-checkbox">
                                     <input type="checkbox" :value="sintoma" v-model="form.ha_tpm_sintomas" class="hidden">
                                     <div class="px-3.5 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 transition">{{ sintoma }}</div>
@@ -325,66 +290,42 @@
 
                         <div class="question-block">
                             <toggle-question v-model="form.ha_varizes" label="Varizes / Vasinhos?"></toggle-question>
-                            <div class="input-group mt-2" v-if="form.ha_varizes">
-                                <input v-model="form.ha_varizes_local" placeholder="Em qual local?" class="input-detail">
-                            </div>
+                            <input v-if="form.ha_varizes" v-model="form.ha_varizes_local" placeholder="Em qual local?" class="input-detail">
                         </div>
                         <div class="question-block">
                             <toggle-question v-model="form.ha_protese" label="Placa, pino ou prótese?"></toggle-question>
-                            <div class="input-group mt-2" v-if="form.ha_protese">
-                                <input v-model="form.ha_protese_local" placeholder="Onde?" class="input-detail">
-                            </div>
+                            <input v-if="form.ha_protese" v-model="form.ha_protese_local" placeholder="Onde?" class="input-detail">
                         </div>
                         <div class="question-block">
                             <toggle-question v-model="form.ha_cancer" label="Histórico de Câncer?"></toggle-question>
-                            <div class="input-group mt-2" v-if="form.ha_cancer">
-                                <input v-model="form.ha_cancer_obs" placeholder="Observações..." class="input-detail">
-                            </div>
+                            <input v-if="form.ha_cancer" v-model="form.ha_cancer_obs" placeholder="Observações..." class="input-detail">
                         </div>
 
                         <div class="space-y-4">
-                            <div class="input-group">
-                                <span class="label-text">Outras Doenças</span>
-                                <input v-model="form.ha_outras_doencas" class="input-field">
-                            </div>
-                            <div class="input-group">
-                                <span class="label-text">Funcionamento Intestino</span>
-                                <input v-model="form.ha_intestino" placeholder="Ex: Regular, Preso..." class="input-field">
-                            </div>
+                            <input v-model="form.ha_outras_doencas" placeholder="Outras Doenças" class="input-field">
+                            <input v-model="form.ha_intestino" placeholder="Funcionamento Intestino (Regular/Preso)" class="input-field">
                         </div>
                     </section>
 
-                    <section class="space-y-5">
-                        <h3 class="flex items-center gap-3 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 px-4 py-3 rounded-xl border border-rose-100">
+                    <section class="space-y-4">
+                        <h3 class="flex items-center gap-3 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 px-4 py-3 rounded-xl border border-rose-100 mb-4">
                             <i class="ph ph-coffee text-lg"></i> História Social (H.S.)
                         </h3>
 
-                        <div class="space-y-4">
-                            <div class="input-group">
-                                <span class="label-text">Tipo de Vestuário</span>
-                                <input v-model="form.hs_vestuario" placeholder="Ex: Jeans apertado, Legging" class="input-field">
-                            </div>
-                            <div class="input-group">
-                                <span class="label-text">Horas de Sono</span>
-                                <input v-model="form.hs_sono" placeholder="Ex: 8h por noite" class="input-field">
-                            </div>
-                        </div>
+                        <input v-model="form.hs_vestuario" placeholder="Tipo de Vestuário (Ex: Jeans apertado, Legging)" class="input-field">
+                        <input v-model="form.hs_sono" placeholder="Horas de Sono (Ex: 8h)" class="input-field">
 
                         <div class="question-block">
                             <toggle-question v-model="form.hs_atividade_fisica" label="Atividade Física?"></toggle-question>
                             <div v-if="form.hs_atividade_fisica" class="grid grid-cols-2 gap-3 mt-3">
-                                <div class="input-group">
-                                    <input v-model="form.hs_atividade_qual" placeholder="Qual?" class="input-detail">
-                                </div>
-                                <div class="input-group">
-                                    <input v-model="form.hs_atividade_freq" placeholder="Freq?" class="input-detail">
-                                </div>
+                                <input v-model="form.hs_atividade_qual" placeholder="Qual?" class="input-detail">
+                                <input v-model="form.hs_atividade_freq" placeholder="Freq?" class="input-detail">
                             </div>
                         </div>
 
-                        <div class="input-group">
-                            <span class="label-text">Alimentação predominante</span>
-                            <div class="flex flex-wrap gap-2 mt-1">
+                        <div>
+                            <span class="group-label">Alimentação predominante</span>
+                            <div class="flex flex-wrap gap-2">
                                 <label v-for="alim in ['Verdura/Legumes', 'Frituras', 'Massas', 'Frutas', 'Doces']" :key="alim" class="cursor-pointer custom-checkbox">
                                     <input type="checkbox" :value="alim" v-model="form.hs_alimentacao" class="hidden">
                                     <div class="px-3.5 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 transition">{{ alim }}</div>
@@ -392,9 +333,9 @@
                             </div>
                         </div>
 
-                        <div class="input-group">
-                            <span class="label-text">Come mais em qual horário?</span>
-                            <div class="flex gap-2 mt-1">
+                        <div>
+                            <span class="group-label">Come mais em qual horário?</span>
+                            <div class="flex gap-2">
                                 <label v-for="turno in ['Manhã', 'Tarde', 'Noite']" :key="turno" class="flex-1 cursor-pointer custom-checkbox">
                                     <input type="radio" :value="turno" v-model="form.hs_horario_comer" class="hidden">
                                     <div :class="form.hs_horario_comer === turno ? 'bg-rose-400 text-white' : 'bg-white border-gray-200 text-gray-500'" class="border rounded-xl py-3 text-center text-xs font-bold transition">{{ turno }}</div>
@@ -404,74 +345,51 @@
 
                         <div class="question-block">
                             <toggle-question v-model="form.hs_dieta" label="Faz dieta atualmente?"></toggle-question>
-                            <div class="input-group mt-2" v-if="form.hs_dieta">
-                                <input v-model="form.hs_dieta_como" placeholder="Descreva a dieta..." class="input-detail">
-                            </div>
+                            <input v-if="form.hs_dieta" v-model="form.hs_dieta_como" placeholder="Descreva a dieta..." class="input-detail">
                         </div>
 
                         <div class="question-block">
                             <toggle-question v-model="form.hs_liquido" label="Ingere bastante líquido?"></toggle-question>
-                            <div class="input-group mt-2" v-if="form.hs_liquido">
-                                <input v-model="form.hs_liquido_qtd" placeholder="Quantidade média (litros)" class="input-detail">
-                            </div>
+                            <input v-if="form.hs_liquido" v-model="form.hs_liquido_qtd" placeholder="Quantidade média (litros)" class="input-detail">
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
                             <toggle-card v-model="form.hs_fuma" label="Fuma?" icon="ph-cigarette"></toggle-card>
                             <toggle-card v-model="form.hs_alcool" label="Álcool?" icon="ph-beer-bottle"></toggle-card>
                         </div>
-                        <div class="input-group" v-if="form.hs_alcool">
-                            <input v-model="form.hs_alcool_freq" placeholder="Frequência do álcool?" class="input-detail">
-                        </div>
+                        <input v-if="form.hs_alcool" v-model="form.hs_alcool_freq" placeholder="Frequência do álcool?" class="input-detail">
 
                         <div class="question-block">
                             <toggle-question v-model="form.hs_sol" label="Costuma pegar sol?"></toggle-question>
-                            <div class="input-group mt-2" v-if="form.hs_sol">
-                                <input v-model="form.hs_sol_freq" placeholder="Tempo e horário?" class="input-detail">
-                            </div>
+                            <input v-if="form.hs_sol" v-model="form.hs_sol_freq" placeholder="Tempo e horário?" class="input-detail">
                         </div>
                         <div class="question-block">
                             <toggle-question v-model="form.hs_protetor" label="Usa protetor solar?"></toggle-question>
-                            <div class="input-group mt-2" v-if="form.hs_protetor">
-                                <input v-model="form.hs_protetor_freq" placeholder="Frequência de uso?" class="input-detail">
-                            </div>
+                            <input v-if="form.hs_protetor" v-model="form.hs_protetor_freq" placeholder="Frequência de uso?" class="input-detail">
                         </div>
                     </section>
 
                     <section class="space-y-4">
-                        <h3 class="flex items-center gap-3 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 px-4 py-3 rounded-xl border border-rose-100">
+                        <h3 class="flex items-center gap-3 text-xs font-bold text-rose-900 uppercase tracking-widest bg-rose-50 px-4 py-3 rounded-xl border border-rose-100 mb-4">
                             <i class="ph ph-face-mask text-lg"></i> Estética & Gestacional
                         </h3>
 
-                        <div class="input-group">
-                            <span class="label-text">Procedimentos Estéticos Anteriores</span>
-                            <input v-model="form.hs_proc_estetico" placeholder="Ex: Limpeza de pele, Botox..." class="input-field">
-                        </div>
+                        <input v-model="form.hs_proc_estetico" placeholder="Procedimentos Estéticos Anteriores" class="input-field">
                         
                         <div class="question-block">
                             <toggle-question v-model="form.hs_cirurgia" label="Já fez cirurgia plástica?"></toggle-question>
-                            <div class="input-group mt-2" v-if="form.hs_cirurgia">
-                                <input v-model="form.hs_cirurgia_qual" placeholder="Qual e quando?" class="input-detail">
-                            </div>
+                            <input v-if="form.hs_cirurgia" v-model="form.hs_cirurgia_qual" placeholder="Qual e quando?" class="input-detail">
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="input-group">
-                                <span class="label-text">Gestações (Qtd)</span>
-                                <input v-model="form.hs_gestante_qtd" type="number" class="input-field">
-                            </div>
-                            <div class="input-group">
-                                <span class="label-text">Abortos (Qtd)</span>
-                                <input v-model="form.hs_aborto_qtd" type="number" class="input-field">
-                            </div>
+                            <input v-model="form.hs_gestante_qtd" type="number" placeholder="Gestações (Qtd)" class="input-field">
+                            <input v-model="form.hs_aborto_qtd" type="number" placeholder="Abortos (Qtd)" class="input-field">
                         </div>
-                        <div class="input-group">
-                            <span class="label-text">Tipo de Parto</span>
-                            <input v-model="form.hs_tipo_parto" placeholder="Normal / Cesárea" class="input-field">
-                        </div>
+                        
+                        <input v-model="form.hs_tipo_parto" placeholder="Tipo de Parto (Normal / Cesárea)" class="input-field">
 
-                        <div class="pt-6 input-group">
-                            <label class="label-text text-rose-900">Observações Finais</label>
+                        <div class="pt-6">
+                            <span class="group-label text-rose-900">Observações Finais</span>
                             <textarea v-model="form.obs_final" rows="4" placeholder="Alguma informação importante que não perguntamos?" class="w-full p-4 bg-gray-50 rounded-2xl border border-transparent focus:bg-white focus:border-rose-200 focus:ring-4 focus:ring-rose-50 outline-none text-sm font-medium transition"></textarea>
                         </div>
                     </section>
@@ -705,4 +623,3 @@
     </script>
 </body>
 </html>
-
