@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Easy Anamnese</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2936/2936886.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rose: { 50: '#fff1f2', 100: '#ffe4e6', 500: '#f43f5e', 900: '#881337' },
+                        stone: { 50: '#fafaf9' } // Off-white
+                    },
+                    fontFamily: { serif: ['Georgia', 'serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-stone-50 text-gray-800 h-screen overflow-hidden">
+    <div id="app" class="h-full flex flex-col relative">
+
+        <div v-if="!user" class="flex flex-col justify-center items-center h-full p-6 bg-rose-50">
+            <h1 class="text-3xl font-serif text-rose-900 mb-2">Easy Anamnese</h1>
+            <p class="text-gray-500 mb-8">Gestão Digital para Estética</p>
+            
+            <input v-model="email" type="email" placeholder="E-mail" class="w-full p-3 mb-3 border rounded-lg shadow-sm">
+            <input v-model="password" type="password" placeholder="Senha" class="w-full p-3 mb-6 border rounded-lg shadow-sm">
+            
+            <button @click="login" class="w-full bg-rose-900 text-white p-3 rounded-lg font-bold shadow-lg">Entrar</button>
+            <p v-if="error" class="text-red-500 mt-4 text-sm">{{ error }}</p>
+        </div>
+
+        <div v-else class="flex flex-col h-full">
+            <header class="bg-rose-900 text-white p-4 pt-12 shadow-md flex justify-between items-center">
+                <h2 class="font-serif text-xl">Olá, Dra.</h2>
+                <button @click="logout" class="text-xs border border-white px-2 py-1 rounded">Sair</button>
+            </header>
+
+            <div v-if="view === 'list'" class="flex-1 overflow-y-auto p-4 pb-24">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-700">Fichas Recentes</h3>
+                    <button @click="view = 'form'" class="bg-rose-500 text-white px-4 py-2 rounded-full shadow">+ Nova Ficha</button>
+                </div>
+
+                <div v-for="client in clients" :key="client.id" class="bg-white p-4 rounded-xl shadow-sm mb-3 border-l-4 border-rose-500">
+                    <p class="font-bold text-lg">{{ client.nome }}</p>
+                    <p class="text-sm text-gray-500">Alergias: {{ client.alergias || 'Nenhuma' }}</p>
+                    <p class="text-xs text-gray-400 mt-1">{{ new Date(client.data.seconds * 1000).toLocaleDateString() }}</p>
+                </div>
+            </div>
+
+            <div v-if="view === 'form'" class="flex-1 overflow-y-auto p-4 pb-24">
+                <button @click="view = 'list'" class="text-rose-500 mb-4 font-bold">← Voltar</button>
+                <h2 class="text-2xl font-serif text-rose-900 mb-6">Nova Anamnese</h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nome da Cliente</label>
+                        <input v-model="form.nome" type="text" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-rose-500 focus:border-rose-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Telefone</label>
+                        <input v-model="form.telefone" type="tel" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Alergias / Restrições</label>
+                        <textarea v-model="form.alergias" rows="3" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm" placeholder="Ex: Iodo, Frutos do mar..."></textarea>
+                    </div>
+                    
+                    <div class="pb-10"></div>
+                </div>
+            </div>
+
+            <div v-if="view === 'form'" class="fixed bottom-6 left-4 right-4">
+                <button @click="saveAnamnese" class="w-full bg-green-600 text-white p-4 rounded-xl font-bold shadow-xl text-lg">
+                    Salvar Ficha
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // --- COLE SUA CONFIGURAÇÃO DO FIREBASE AQUI ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBT9OUbgtGQWK51ixifL1lxNxbxvH5XTTs",
+            authDomain: "easy-anamnese-prd.firebaseapp.com",
+            projectId: "easy-anamnese-prd",
+            storageBucket: "easy-anamnese-prd.firebasestorage.app",
+            messagingSenderId: "304186185740",
+            appId: "1:304186185740:web:e0f48809a9b2ec97f1f629"
+
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const { createApp, ref, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const user = ref(null);
+                const email = ref('');
+                const password = ref('');
+                const error = ref('');
+                const view = ref('list'); // 'list' ou 'form'
+                const clients = ref([]);
+                const form = ref({ nome: '', telefone: '', alergias: '' });
+
+                // Função de Sanitização (Segurança contra XSS)
+                const sanitize = (str) => {
+                    const temp = document.createElement('div');
+                    temp.textContent = str;
+                    return temp.innerHTML;
+                };
+
+                // Auth Listener
+                onAuthStateChanged(auth, (u) => {
+                    user.value = u;
+                    if(u) loadClients();
+                });
+
+                const login = async () => {
+                    try {
+                        await signInWithEmailAndPassword(auth, email.value, password.value);
+                    } catch (e) { error.value = "Erro no login: " + e.message; }
+                };
+
+                const logout = () => signOut(auth);
+
+                const loadClients = () => {
+                    const q = query(collection(db, "anamneses"), orderBy("data", "desc"));
+                    onSnapshot(q, (snapshot) => {
+                        clients.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    });
+                };
+
+                const saveAnamnese = async () => {
+                    if(!form.value.nome) return alert("Nome obrigatório");
+                    
+                    // Aplica Sanitização antes de enviar
+                    const cleanData = {
+                        nome: sanitize(form.value.nome),
+                        telefone: sanitize(form.value.telefone),
+                        alergias: sanitize(form.value.alergias),
+                        usuario_id: user.value.uid,
+                        data: serverTimestamp()
+                    };
+
+                    try {
+                        await addDoc(collection(db, "anamneses"), cleanData);
+                        alert("Ficha salva com sucesso!");
+                        form.value = { nome: '', telefone: '', alergias: '' };
+                        view.value = 'list';
+                    } catch (e) {
+                        alert("Erro ao salvar: " + e.message);
+                    }
+                };
+
+                return { user, email, password, error, login, logout, view, clients, form, saveAnamnese };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
