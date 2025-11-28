@@ -52,7 +52,7 @@
         /* Checkboxes refinados */
         .custom-checkbox input:checked + div { background-color: #E9967A; border-color: #E9967A; color: white; box-shadow: 0 4px 12px rgba(233, 150, 122, 0.4); }
         
-        /* Input Base Style - Agora com estilo mais sólido para destacar a área clicável */
+        /* Input Base Style */
         .input-field { 
             @apply w-full px-4 py-4 bg-white rounded-2xl border border-gray-200 
             focus:border-rose-300 focus:ring-4 focus:ring-rose-100 outline-none 
@@ -67,7 +67,7 @@
         }
         
         /* Blocos de Pergunta */
-        .question-block { @apply p-4 bg-white border border-gray-100 rounded-2xl shadow-sm mb-2; }
+        .question-block { @apply p-4 bg-white border border-gray-100 rounded-2xl shadow-sm mb-2 transition-all; }
         
         /* Título de seção pequeno para Radio Buttons */
         .group-label { @apply text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1 mb-1 block; }
@@ -374,7 +374,10 @@
                             <i class="ph ph-face-mask text-lg"></i> Estética & Gestacional
                         </h3>
 
-                        <input v-model="form.hs_proc_estetico" placeholder="Procedimentos Estéticos Anteriores" class="input-field">
+                        <div class="question-block">
+                            <toggle-question v-model="form.check_proc_estetico" label="Já fez procedimentos estéticos?"></toggle-question>
+                            <input v-if="form.check_proc_estetico" v-model="form.hs_proc_estetico" placeholder="Quais e quando?" class="input-detail">
+                        </div>
                         
                         <div class="question-block">
                             <toggle-question v-model="form.hs_cirurgia" label="Já fez cirurgia plástica?"></toggle-question>
@@ -623,3 +626,4 @@
     </script>
 </body>
 </html>
+
